@@ -95,7 +95,7 @@ const audit = () => {
     issues.push(`main block right edge is ${main.getBoundingClientRect().right.toFixed(1)}`);
 
   // Rows read from the right: each child sits to the left of the one before it
-  for (const row of slide.querySelectorAll('.ratio, .steps, .ingredients, .misses, .stack, .seg, .legend, .fields, .presets, .lab-grid, .two')) {
+  for (const row of slide.querySelectorAll('.ratio, .steps, .ingredients, .misses, .stack, .seg, .legend, .fields, .presets, .lab-grid, .two, .slider, .rank, .head.split')) {
     if (!visible(row)) continue;
     const kids = [...row.children].filter(visible);
     for (let i = 1; i < kids.length; i++) {
@@ -143,9 +143,10 @@ check('Next is disabled on the last slide', await page.isDisabled('#next') && aw
 
 /* Sources drawer enters from the left, the inline end in RTL */
 await page.click('#open-sources');
-await page.waitForTimeout(420);
-const drawer = await page.evaluate(() => document.querySelector('#sources').getBoundingClientRect().toJSON());
-check('Sources drawer opens on the left edge', Math.abs(drawer.left) <= 1, `left=${drawer.left}`);
+const drawerSettled = await page.waitForFunction(
+  () => Math.abs(document.querySelector('#sources').getBoundingClientRect().left) <= 1, null, { timeout: 3000 }
+).then(() => true, () => false);
+check('Sources drawer opens on the left edge', drawerSettled);
 await page.keyboard.press('Escape');
 await page.waitForTimeout(420);
 check('Escape closes the sources drawer', await page.evaluate(() => getComputedStyle(document.querySelector('#sources')).visibility) === 'hidden');
@@ -171,7 +172,9 @@ check('Steps reveal one at a time', await page.isDisabled('#s4 [data-next-step]'
 /* Same layout at other window sizes */
 for (const [w, h] of [[1366, 768], [1920, 1080], [1280, 800]]) {
   await page.setViewportSize({ width: w, height: h });
-  await page.waitForTimeout(100);
+  await page.waitForFunction(expected => Math.abs(
+    parseFloat(document.querySelector('#stage').style.getPropertyValue('--scale')) - expected) < 1e-3,
+    Math.min(w / 1600, h / 900), { timeout: 15000 }).catch(() => {});
   const fits = await page.evaluate(() => {
     const r = document.querySelector('#stage').getBoundingClientRect();
     return r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1 &&
@@ -179,6 +182,85 @@ for (const [w, h] of [[1366, 768], [1920, 1080], [1280, 800]]) {
   });
   check(`Stage fits and stays centered at ${w}x${h}`, fits);
 }
+
+/* The 3D bake */
+await page.setViewportSize({ width: 1600, height: 900 });
+await page.goto(URL_ + '#7'); await page.reload();
+await page.waitForFunction(() => window.bakery?.stats.bakes > 0, null, { timeout: 60000 });
+await page.waitForFunction(() => !bakery.stats.running, null, { timeout: 20000 });
+const firstBake = await page.evaluate(() => bakery.stats.lastBakeMs);
+check('Bake finishes within 5 seconds (T4)', firstBake > 0 && firstBake <= 5000, `${firstBake} ms`);
+check('Timeline reaches its last stage, from the right edge',
+  await page.$$eval('#bake-timeline li.on', li => li.length) === 3);
+await page.click('#bake-replay');
+check('Replay restarts the bake', await page.evaluate(() => bakery.stats.running));
+await page.waitForFunction(() => !bakery.stats.running, null, { timeout: 20000 });
+await page.goto(URL_ + '#1'); await page.reload();
+await page.waitForFunction(() => window.bakery, null, { timeout: 60000 });
+const idle = await page.evaluate(async () => {
+  const before = bakery.stats.frames;
+  await new Promise(r => setTimeout(r, 500));
+  return bakery.stats.frames - before;
+});
+check('Nothing renders when the 3D slide is not showing', idle === 0, `${idle} frames`);
+
+/* Python in the page */
+await page.goto(URL_ + '#8'); await page.reload();
+await page.waitForSelector('#py-status[data-state="ready"]', { state: 'attached', timeout: 90000 });
+check('Python runs in the page from file:// (T3)', true);
+const pageResults = await page.evaluate(() => {
+  const data = JSON.parse(document.getElementById('py-data').textContent);
+  return data.recipes.map(r => {
+    const live = py.classify(r.grams);
+    return { id: r.id, same: live.closest === r.result.closest && Math.abs(live.gap - r.result.gap) < 1e-12 };
+  });
+});
+const mismatched = pageResults.filter(r => !r.same).map(r => r.id);
+check('Python in the browser matches the repo on all 12 recipes (T3)', mismatched.length === 0, mismatched.join(', '));
+
+const closest = () => page.textContent('#lab-closest');
+await page.click('[data-preset="baguette"]');
+check('Baguette preset reads as bread', await closest() === 'לחם');
+const baguetteGap = await page.textContent('#lab-gap');
+await page.click('#lab-double');
+check('Doubling changes grams but not the answer',
+  await closest() === 'לחם' && await page.textContent('#lab-gap') === baguetteGap &&
+  await page.$eval('[data-out="flour"]', o => o.textContent.includes('1,000')));
+await page.click('[data-preset="pate_sucree"]');
+await page.waitForTimeout(600);
+const blend = await page.evaluate(() => bakery.current());
+check('Python answer drives the 3D shape', blend[2] > blend[0] && blend[2] > blend[3], blend.join(','));
+
+/* Sliders run the RTL way: minimum on the right, growing to the left */
+const box = await page.locator('#sliders input[data-ing="sugar"]').boundingBox();
+await page.mouse.click(box.x + box.width - 3, box.y + box.height / 2);
+const low = +await page.inputValue('#sliders input[data-ing="sugar"]');
+await page.mouse.click(box.x + 3, box.y + box.height / 2);
+const high = +await page.inputValue('#sliders input[data-ing="sugar"]');
+check('Slider minimum is on the right', low < 100, `value ${low}`);
+check('Slider grows toward the left', high > 1900, `value ${high}`);
+const rtlBars = await page.evaluate(() => {
+  const row = document.querySelector('.rank'), label = row.children[0].getBoundingClientRect(),
+    track = row.children[1].getBoundingClientRect(), bar = row.querySelector('.track i').getBoundingClientRect(),
+    score = row.children[2].getBoundingClientRect();
+  return label.left >= track.right - 1 && track.left >= score.right - 1 && Math.abs(bar.right - track.right) < 1;
+});
+check('Score bars grow from the right, label first', rtlBars);
+await page.locator('#sliders input[data-ing="flour"]').fill('0');
+check('Zero flour explains itself and does not crash', (await page.textContent('#lab-gap')).includes('בלי קמח'));
+await page.click('#lab-code-toggle');
+const code = await page.evaluate(() => {
+  const el = document.querySelector('#lab-code'), s = getComputedStyle(el);
+  return { text: el.textContent, dir: s.direction, align: s.textAlign, hidden: el.hidden };
+});
+check('Code panel shows real source, left to right', !code.hidden && code.dir === 'ltr' && code.text.includes('def classify'));
+
+await page.goto(URL_ + '#10'); await page.reload();
+await page.waitForSelector('#py-status[data-state="ready"]', { state: 'attached', timeout: 90000 });
+await page.fill('#yours input[data-ing="flour"]', '500');
+await page.fill('#yours input[data-ing="liquid"]', '300');
+await page.click('#yours button[type="submit"]');
+check('Typed recipe gets an answer from Python', (await page.textContent('#yours-verdict')).includes('לחם'));
 
 check('No console errors', errors.length === 0, errors.slice(0, 5).join('\n      '));
 await browser.close();

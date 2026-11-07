@@ -56,7 +56,10 @@ def classify(grams):
     scores = {name: cosine(vector, ref) for name, ref in FAMILIES.items()}
     ranking = sorted(scores, key=scores.get, reverse=True)
 
-    weights = {name: math.exp(BLEND_SHARPNESS * score) for name, score in scores.items()}
+    weights = {
+        name: math.exp(BLEND_SHARPNESS * score)
+        for name, score in scores.items()
+    }
     total = sum(weights.values())
 
     return {

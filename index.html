@@ -185,16 +185,16 @@ table.grid td.strong { font-weight: 800; color: var(--accent); }
 .head.split { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
 .head.split h2 { font-size: 48px; }
 .lab { row-gap: 22px; padding-block-start: 44px; }
-.lab-grid { display: grid; grid-template-columns: minmax(0, 500px) minmax(0, 440px) minmax(0, 1fr); gap: 20px; min-block-size: 0; }
+.lab-grid { display: grid; grid-template-columns: minmax(0, 436px) minmax(0, 372px) minmax(0, 1fr); gap: 20px; min-block-size: 0; }
 .lab-grid .panel { padding: 20px 22px; min-block-size: 0; }
 .chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); font-size: 18px; font-weight: 500; white-space: nowrap; }
 .chip::before { content: ""; inline-size: 10px; block-size: 10px; border-radius: 50%; background: var(--muted); }
 .chip[data-state="ready"]::before { background: #6FCF7F; }
 .chip[data-state="fallback"]::before { background: #F0A24A; }
 .presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-block-end: 12px; }
-.presets button { min-height: 36px; padding-inline: 8px; border: 1px solid var(--line); border-radius: 9px; background: transparent; font-size: 17px; font-weight: 500; white-space: nowrap; }
+.presets button { min-height: 36px; padding-inline: 4px; border: 1px solid var(--line); border-radius: 9px; background: transparent; font-size: 17px; font-weight: 500; white-space: nowrap; }
 .presets button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.slider { display: grid; grid-template-columns: 64px minmax(0, 1fr) 96px; align-items: center; gap: 12px; min-height: 42px; font-size: 19px; font-weight: 500; }
+.slider { display: grid; grid-template-columns: 56px minmax(0, 1fr) 84px; align-items: center; gap: 12px; min-height: 42px; font-size: 19px; font-weight: 500; }
 .slider output { text-align: start; font-variant-numeric: tabular-nums; }
 input[type="range"] {
   -webkit-appearance: none; appearance: none; inline-size: 100%; block-size: 10px; margin: 0; border-radius: 5px;
@@ -220,12 +220,13 @@ input[type="range"]::-moz-range-thumb { inline-size: 16px; block-size: 16px; bor
 
 /* The one deliberate LTR exception: code and formulas stay in their own direction */
 .ltr-block { direction: ltr; text-align: left; unicode-bidi: isolate; }
-pre.code { grid-area: 1 / 1; z-index: 1; overflow: auto; margin: 0; padding: 60px 18px 18px; border-radius: 18px; background: #120A06; border: 1px solid var(--line); color: #F4E2C6; font: 400 14.5px/1.5 var(--code); }
+pre.code { grid-area: 1 / 1; z-index: 1; overflow: auto; margin: 0; padding: 60px 18px 18px; border-radius: 18px; background: #120A06; border: 1px solid var(--line); color: #F4E2C6; font: 400 13.5px/1.55 var(--code); }
 pre.code[hidden] { display: none; }
 
 /* Slide 9 */
 .misses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-.miss { padding: 24px 26px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
+.miss { display: grid; grid-template-rows: auto auto 1fr auto; padding: 24px 26px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
+.miss .stack { height: 30px; margin-block-start: 14px; }
 .miss h3 { font-size: 40px; margin-block-end: 12px; }
 .miss dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; margin: 0 0 16px; font-size: 23px; }
 .miss dt { color: var(--muted); }
@@ -552,7 +553,10 @@ def classify(grams):
     scores = {name: cosine(vector, ref) for name, ref in FAMILIES.items()}
     ranking = sorted(scores, key=scores.get, reverse=True)
 
-    weights = {name: math.exp(BLEND_SHARPNESS * score) for name, score in scores.items()}
+    weights = {
+        name: math.exp(BLEND_SHARPNESS * score)
+        for name, score in scores.items()
+    }
     total = sum(weights.values())
 
     return {
@@ -745,7 +749,7 @@ renderTwin('cookie');
 const byId = Object.fromEntries(DATA.recipes.map(r => [r.id, r]));
 $('#score').innerHTML = `${DATA.score.correct} מתוך ${DATA.score.total} נכונים`;
 const WHY = {
-  brioche: g => `הפסד בפער של ${ltr(g)} בלבד. הווקטור לא רואה שמרים, בדיוק מה שהופך את הבריוש ללחם.`,
+  brioche: g => `המודל התלבט בין עוגייה לפאי בפער של ${ltr(g)}, ולחם הגיע אחרון. הווקטור לא רואה שמרים, בדיוק מה שהופך בריוש ללחם.`,
   toll_house: () => 'במתכון המקורי יש יותר סוכר מקמח, ומספרית הוא באמת קרוב לעוגה. היחס לבדו לא מספר איך מעבדים את הבצק.',
   pate_sucree: () => 'כאן המודל כנראה צודק: בלי מים, עם סוכר וביצה, זה בעצם בצק עוגיות בתוך תבנית.',
 };
@@ -753,8 +757,10 @@ $('#misses').innerHTML = Object.keys(WHY).map(id => {
   const r = byId[id], gap = r.result.gap.toFixed(3);
   return `<article class="miss"><h3>${r.name_he}</h3>
     <dl><dt>התיוג שלנו</dt><dd>${FAMILY_HE[r.family]}</dd><dt>המודל אמר</dt><dd>${FAMILY_HE[r.result.closest]}</dd></dl>
-    <p>${WHY[id](gap)}</p></article>`;
+    <p>${WHY[id](gap)}</p>
+    <div class="stack" data-pcts="${id}" role="img" aria-label="היחס בין המרכיבים ב${r.name_he}"></div></article>`;
 }).join('');
+$$('[data-pcts]').forEach(el => stack(el, Object.entries(byId[el.dataset.pcts].result.percentages)));
 
 /* Sources */
 const FACTS = [
@@ -782,7 +788,594 @@ function toggleSources(open) {
 $('#open-sources').addEventListener('click', () => toggleSources(true));
 $('#close-sources').addEventListener('click', () => toggleSources(false));
 
+/* Python: real Python in the page, through Pyodide. It runs the same file as
+   python/recipe_vectors.py. If it can't load, the presets keep working from
+   results that file computed at build time, and the status chip says so. */
+const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+const py = { ready: false, failed: false, classify: null };
+const STATUS = {
+  loading: `${ltr('Python')} נטען…`,
+  ready: `${ltr('Python')} רץ בדפדפן דרך ${ltr('Pyodide')}`,
+  fallback: `${ltr('Python')} לא נטען: תוצאות שחושבו מראש`,
+};
+function setStatus(state) {
+  const chip = $('#py-status');
+  chip.dataset.state = state; chip.innerHTML = STATUS[state];
+}
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.append(s);
+  });
+}
+async function loadPython() {
+  const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 60000));
+  try {
+    await Promise.race([loadScript(PYODIDE + 'pyodide.js'), timeout]);
+    const runtime = await Promise.race([loadPyodide({ indexURL: PYODIDE }), timeout]);
+    runtime.runPython($('#py-source').textContent);
+    const classify = runtime.globals.get('classify_json');
+    py.classify = grams => JSON.parse(classify(JSON.stringify(grams)));
+    py.ready = true;
+    setStatus('ready');
+  } catch (problem) {
+    console.warn('Python unavailable:', problem);
+    py.failed = true;
+    setStatus('fallback');
+  }
+  $$('#sliders input').forEach(input => { input.disabled = !py.ready; });
+  $('#lab-double').disabled = !py.ready;
+  renderLab();
+}
+
+/* Slide 8: the lab */
+const MAX_GRAMS = 2000;
+const lab = { preset: 'challah', grams: {}, touched: false };
+const source = $('#py-source').textContent;
+const shortCode = source.slice(source.indexOf('def cosine'), source.indexOf('def classify_json')).trim();
+
+function loadPreset(id) {
+  const recipe = byId[id], scale = 500 / recipe.grams.flour;
+  lab.preset = id; lab.touched = false;
+  lab.grams = Object.fromEntries(DATA.ingredients.map(i => [i, (recipe.grams[i] || 0) * scale]));
+  $$('#presets button').forEach(b => b.setAttribute('aria-pressed', b.dataset.preset === id));
+  renderLab();
+}
+function labResult() {
+  if (py.ready) return py.classify(lab.grams);
+  return lab.touched ? null : byId[lab.preset].result;
+}
+function renderLab() {
+  for (const i of DATA.ingredients) {
+    const input = $(`#sliders input[data-ing="${i}"]`), grams = lab.grams[i] ?? 0;
+    input.value = grams;
+    input.style.setProperty('--fill', `${100 * grams / MAX_GRAMS}%`);
+    $(`#sliders output[data-out="${i}"]`).innerHTML = `${ltr(fmt(grams))} ג׳`;
+  }
+  $('#lab-double').disabled = !py.ready || Object.values(lab.grams).some(g => g * 2 > MAX_GRAMS);
+  const result = labResult();
+  if (!result) return;
+  if (result.error) {
+    $('#lab-closest').textContent = 'אין תשובה';
+    $('#lab-gap').textContent = 'בלי קמח אין אחוזי אופה: הכול נמדד ביחס אליו.';
+    $('#lab-ranks').innerHTML = '';
+    return;
+  }
+  $('#lab-closest').textContent = FAMILY_HE[result.closest];
+  const gap = result.gap.toFixed(3);
+  $('#lab-gap').innerHTML = result.gap < .02
+    ? `כמעט תיקו עם ${FAMILY_HE[result.runner_up]}: פער של ${ltr(gap)}`
+    : `אחריו ${FAMILY_HE[result.runner_up]}, בפער של ${ltr(gap)}`;
+  $('#lab-ranks').innerHTML = Object.keys(DATA.families).map(f =>
+    `<div class="rank${f === result.closest ? ' top' : ''}"><span>${FAMILY_HE[f]}</span>
+      <div class="track"><i style="inline-size:${(result.scores[f] * 100).toFixed(1)}%"></i></div>
+      <output>${ltr(result.scores[f].toFixed(2))}</output></div>`).join('');
+  if (current === 7) window.bakery?.morph(result.blend);
+}
+
+$('#presets').innerHTML = DATA.recipes.map(r =>
+  `<button data-preset="${r.id}" aria-pressed="false">${r.name_he}</button>`).join('');
+$('#presets').addEventListener('click', e => { if (e.target.dataset.preset) loadPreset(e.target.dataset.preset); });
+$('#sliders').innerHTML = DATA.ingredients.map(i => `
+  <label class="slider c-${i}">
+    <span>${INGREDIENT_HE[i]}</span>
+    <input type="range" min="0" max="${MAX_GRAMS}" step="any" data-ing="${i}" disabled aria-label="${INGREDIENT_HE[i]} בגרמים">
+    <output data-out="${i}"></output>
+  </label>`).join('');
+$('#sliders').addEventListener('input', e => {
+  lab.grams[e.target.dataset.ing] = +e.target.value; lab.touched = true;
+  $$('#presets button').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  renderLab();
+});
+$('#lab-double').addEventListener('click', () => {
+  for (const i of DATA.ingredients) lab.grams[i] *= 2;
+  lab.touched = true;
+  renderLab();
+});
+$('#lab-reset').addEventListener('click', () => loadPreset(lab.preset));
+$('#lab-code').textContent = shortCode;
+$('#lab-code-toggle').addEventListener('click', e => {
+  const code = $('#lab-code'), open = code.hidden;
+  code.hidden = !open;
+  e.currentTarget.setAttribute('aria-pressed', open);
+  e.currentTarget.textContent = open ? 'הסתרת הקוד' : 'הצגת הקוד';
+});
+
+/* Slide 10: type in your own recipe */
+$('#yours-fields').innerHTML = DATA.ingredients.map(i => `
+  <label class="c-${i}">${INGREDIENT_HE[i]}
+    <input type="number" min="0" step="1" inputmode="numeric" data-ing="${i}" placeholder="גרם">
+  </label>`).join('');
+$('#yours').addEventListener('submit', e => {
+  e.preventDefault();
+  const out = $('#yours-verdict');
+  if (!py.ready) {
+    out.textContent = py.failed ? 'החישוב דורש Python, והוא לא נטען בדפדפן הזה.' : 'רגע, Python עדיין נטען.';
+    out.innerHTML = out.textContent.replace('Python', ltr('Python'));
+    return;
+  }
+  const grams = Object.fromEntries($$('#yours input').map(i => [i.dataset.ing, +i.value || 0]));
+  const result = py.classify(grams);
+  out.innerHTML = result.error
+    ? 'בלי קמח אין אחוזי אופה: הכול נמדד ביחס אליו.'
+    : `<b>יצא לכם: ${FAMILY_HE[result.closest]}</b>אחריו ${FAMILY_HE[result.runner_up]}, בפער של ${ltr(result.gap.toFixed(3))}.`;
+});
+
+/* Slide 7: the oven */
+const pure = family => ({ [family]: 1 });
+let bakeFamily = 'bread';
+function startBake() { window.bakery?.bake(pure(bakeFamily)); }
+const stages = $$('#bake-timeline li');
+const deck = window.deck = {
+  bakeryReady() { enterSlide(current + 1); },
+  onBakeProgress(p) {
+    const stage = p >= 1 ? 2 : p > .28 ? 1 : 0;
+    stages.forEach((li, i) => li.classList.toggle('on', i <= stage));
+  },
+};
+function enterSlide(n) {
+  if (!window.bakery) return;
+  if (n === 7) { bakery.attach($('[data-viewport="oven"]')); startBake(); }
+  else if (n === 8) {
+    bakery.attach($('[data-viewport="lab"]'));
+    const result = labResult();
+    if (result && !result.error) bakery.morph(result.blend);
+  }
+  else bakery.attach(null);
+}
+enterHooks.push(enterSlide);
+$('#bake-family').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  pressGroup($('#bake-family'), b); bakeFamily = b.dataset.family; startBake();
+});
+$('#bake-replay').addEventListener('click', startBake);
+
+setStatus('loading');
+loadPreset('challah');
 go(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+loadPython();
+</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+/* The oven. One piece of dough, one mesh, four morph targets: bread, cake, cookie
+   and pie. The weights of the targets are plain numbers, so the Python result on
+   slide 8 can drive the shape directly. Built only from code, with no image assets. */
+const BAKE_SECONDS = 4.8;               // The lecture caps this at 5. The margin covers a late last frame on a slow GPU
+const FAMILIES = ['bread', 'cake', 'cookie', 'pie'];
+const views = () => document.querySelectorAll('[data-viewport]');
+
+function showFallback() {
+  views().forEach(v => {
+    v.insertAdjacentHTML('beforeend', `<div class="fail"><div>
+      <svg viewBox="0 0 200 110" width="320" aria-hidden="true"><path d="M14 92c-8-34 28-72 86-72s94 38 86 72c-2 8-8 10-16 10H30c-8 0-14-2-16-10z" fill="#B8722C"/><path d="M58 40l18 34M96 32l18 40M136 40l16 34" stroke="#EBD3A4" stroke-width="7" stroke-linecap="round"/></svg>
+      <p>תלת־ממד לא זמין בדפדפן הזה, ולכן מוצגת תמונה קבועה.</p></div></div>`);
+  });
+  deck.bake3dFailed = true;
+}
+
+try {
+  const THREE = await import('three');
+  const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+  const { mergeVertices } = await import('three/addons/utils/BufferGeometryUtils.js');
+  const { RoundedBoxGeometry } = await import('three/addons/geometries/RoundedBoxGeometry.js');
+  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+
+  /* Small numeric helpers */
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+  const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+  const linear = hex => { const c = new THREE.Color(hex); return [c.r, c.g, c.b]; };
+  const fract = x => x - Math.floor(x);
+  const hash3 = (x, y, z) => fract(Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453);
+  function noise(x, y, z) {
+    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    const f = v => v * v * (3 - 2 * v), u = f(x - xi), v = f(y - yi), w = f(z - zi);
+    const lerp = (a, b, t) => a + (b - a) * t, h = (i, j, k) => hash3(xi + i, yi + j, zi + k);
+    return lerp(
+      lerp(lerp(h(0, 0, 0), h(1, 0, 0), u), lerp(h(0, 1, 0), h(1, 1, 0), u), v),
+      lerp(lerp(h(0, 0, 1), h(1, 0, 1), u), lerp(h(0, 1, 1), h(1, 1, 1), u), v), w);
+  }
+  const fbm = (x, y, z) => .55 * noise(x, y, z) + .3 * noise(x * 2.1, y * 2.1, z * 2.1) + .15 * noise(x * 4.3, y * 4.3, z * 4.3);
+
+  /* A rounded form around the vertical axis: returns how far along direction d
+     the surface sits. Higher n gives a boxier profile. */
+  function shell(d, R, top, bottom, n) {
+    const rho = Math.hypot(d.x, d.z), h = d.y >= 0 ? top : bottom;
+    return 1 / Math.pow(Math.pow(rho / R, n) + Math.pow(Math.abs(d.y) / h, n), 1 / n);
+  }
+
+  const P = {
+    dough: linear('#E9D7B6'), crumb: linear('#E8CF9E'), crustPale: linear('#B9772F'), crust: linear('#8E4F1C'),
+    crustDark: linear('#4E2610'), cake: linear('#A9682A'), cakeDark: linear('#6B3C15'), sugar: linear('#FBF4E6'),
+    cookie: linear('#A9702F'), cookieDark: linear('#6E4017'), pie: linear('#B57A35'), pieDark: linear('#6F3F16'),
+    berry: linear('#6B1A2B'), berryDark: linear('#3F0E1B'),
+  };
+
+  const shapes = {
+    dough(d) {
+      const t = shell(d, .66, .5, .13, 2.1);
+      return { p: [d.x * t, d.y * t + .13, d.z * t], c: P.dough };
+    },
+    bread(d) {
+      const t = shell(d, .78, .7, .09, 2.3);
+      let x = d.x * t * 1.72, y = d.y * t, z = d.z * t * .98;
+      const taper = 1 - .42 * Math.pow(Math.abs(x) / 1.34, 2.6);
+      z *= taper; if (y > 0) y *= .7 + .3 * taper;
+      y += .09;
+      const a = .5, u = x * Math.cos(a) + z * Math.sin(a), v = -x * Math.sin(a) + z * Math.cos(a);
+      let cut = 0, lip = 0;
+      for (const k of [-.6, 0, .6]) {
+        const span = smooth(.5, .32, Math.abs(v));
+        cut = Math.max(cut, Math.exp(-Math.pow((u - k) / .07, 2)) * span);
+        lip = Math.max(lip, Math.exp(-Math.pow((u - k - .1) / .05, 2)) * span);
+      }
+      const top = smooth(.32, .52, y);
+      y += (lip * .035 - cut * .1) * top;
+      const n = fbm(d.x * 3.4, d.y * 3.4, d.z * 3.4);
+      let c = mix(P.crustPale, P.crust, smooth(.1, .42, y));
+      c = mix(c, P.crustDark, smooth(.4, .68, y) * (.35 + .65 * n) + lip * top * .55);
+      c = mix(c, P.crumb, cut * top);
+      return { p: [x, y, z], c };
+    },
+    cake(d) {
+      const phi = Math.atan2(d.z, d.x), lobes = Math.cos(phi * 12);
+      const t = shell(d, .98 * (1 + .05 * lobes), .68, .03, 4.2);
+      const x = d.x * t, z = d.z * t; let y = d.y * t;
+      const rho = Math.hypot(x, z), top = smooth(.3, .5, y);
+      y -= .36 * Math.exp(-Math.pow(rho / .3, 2)) * top;
+      y += .05 * lobes * smooth(.36, .78, rho) * top;
+      const n = fbm(d.x * 3, d.y * 3, d.z * 3);
+      let c = mix(P.cake, P.cakeDark, smooth(.1, .5, y) * (.3 + .7 * (lobes * .5 + .5)));
+      const dust = top * smooth(.62, .9, n * .7 + (lobes * .5 + .5) * .62);
+      c = mix(c, P.sugar, dust * .92);
+      return { p: [x, y + .03, z], c };
+    },
+    cookie(d) {
+      const phi = Math.atan2(d.z, d.x);
+      const wobble = 1 + .035 * Math.sin(phi * 3 + 1) + .022 * Math.sin(phi * 7 + 2.4);
+      const t = shell(d, 1 * wobble, .19, .03, 2.8);
+      const x = d.x * t, z = d.z * t; let y = d.y * t;
+      const n = fbm(x * 3.2 + 4, 1, z * 3.2 + 2), top = smooth(.02, .09, y);
+      const crack = Math.pow(1 - Math.abs(fbm(x * 5, 7, z * 5) * 2 - 1), 12);
+      y += (n - .5) * .085 * top - crack * .018 * top;
+      let c = mix(P.cookie, P.cookieDark, smooth(.55, 1, Math.hypot(x, z)) * .75 + (1 - top) * .4);
+      c = mix(c, P.crumb, crack * .16 * top);
+      return { p: [x, y + .03, z], c };
+    },
+    pie(d) {
+      const phi = Math.atan2(d.z, d.x);
+      const t = shell(d, 1.16 * (1 + .019 * Math.cos(phi * 24)), .25, .03, 6);
+      const x = d.x * t, z = d.z * t; let y = d.y * t;
+      const rho = Math.hypot(x, z), inside = smooth(.97, .86, rho) * smooth(.1, .2, y);
+      y -= inside * .06;
+      y += .012 * Math.cos(phi * 24) * smooth(.9, 1.05, rho);
+      const n = fbm(x * 4 + 3, 2, z * 4);
+      let c = mix(P.pie, P.pieDark, smooth(.35, .75, n) * .8);
+      c = mix(c, mix(P.berry, P.berryDark, n), inside);
+      return { p: [x, y + .03, z], c };
+    },
+  };
+
+  /* Scene */
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, .1, 50);
+  camera.position.set(0, 2.5, 5.4);
+  const CAMERA_DISTANCE = 5.7;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.domElement.setAttribute('role', 'img');
+  renderer.domElement.setAttribute('aria-label', 'מאפה בתלת־ממד. גררו כדי לסובב.');
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), .04).texture;
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, .2, 0);
+  controls.enablePan = false; controls.enableZoom = false;
+  controls.minPolarAngle = .25; controls.maxPolarAngle = 1.5;
+  controls.update();
+
+  scene.add(new THREE.HemisphereLight('#FFE9C9', '#3A1C0C', .42));
+  const key = new THREE.DirectionalLight('#FFEBCF', 2.1);
+  key.position.set(2.4, 4.6, 2.2);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1536, 1536);
+  Object.assign(key.shadow.camera, { left: -2, right: 2, top: 2, bottom: -2, near: 1, far: 12 });
+  key.shadow.radius = 6; key.shadow.bias = -.0006; key.shadow.normalBias = .02;
+  scene.add(key);
+  const fire = new THREE.PointLight('#FF7A2A', 0, 9, 1.6);
+  fire.position.set(0, 1.5, -2.2);
+  scene.add(fire);
+
+  /* Tray and rack */
+  const steel = new THREE.MeshStandardMaterial({ color: '#2A211C', metalness: .35, roughness: .72, envMapIntensity: .5 });
+  const tray = new THREE.Mesh(new THREE.CylinderGeometry(1.56, 1.6, .05, 96), steel);
+  tray.position.y = -.025; tray.receiveShadow = true; scene.add(tray);
+  const barGeo = new THREE.CylinderGeometry(.012, .012, 5, 8);
+  for (let i = -7; i <= 7; i++) {
+    const bar = new THREE.Mesh(barGeo, steel);
+    bar.rotation.z = Math.PI / 2; bar.position.set(0, -.08, i * .3); scene.add(bar);
+  }
+  /* One mesh, four shapes */
+  const SHADER_NOISE = /* glsl */`
+    float h31(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+    float vn(vec3 p) {
+      vec3 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+      return mix(mix(mix(h31(i), h31(i + vec3(1,0,0)), f.x), mix(h31(i + vec3(0,1,0)), h31(i + vec3(1,1,0)), f.x), f.y),
+                 mix(mix(h31(i + vec3(0,0,1)), h31(i + vec3(1,0,1)), f.x), mix(h31(i + vec3(0,1,1)), h31(i + vec3(1,1,1)), f.x), f.y), f.z);
+    }
+    float fbm3(vec3 p) { return .5 * vn(p) + .3 * vn(p * 2.3) + .2 * vn(p * 5.1); }`;
+
+  const brownUniform = { value: 0 };
+  const doughUniform = { value: new THREE.Color(...P.dough) };
+  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .74, metalness: 0, envMapIntensity: .5 });
+  material.onBeforeCompile = shader => {
+    shader.uniforms.uBrown = brownUniform;
+    shader.uniforms.uDough = doughUniform;
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', 'attribute vec3 aDir; varying vec3 vDir;\n#include <common>')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvDir = aDir;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `uniform float uBrown; uniform vec3 uDough; varying vec3 vDir;\n${SHADER_NOISE}\n#include <common>`)
+      .replace('#include <color_fragment>', `#include <color_fragment>
+        float mottle = fbm3(vDir * 7.);
+        vec3 baked = diffuseColor.rgb * (.82 + .36 * mottle);
+        diffuseColor.rgb = mix(uDough * (.97 + .06 * mottle), baked, uBrown);`)
+      .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+        float bumpH = fbm3(vDir * 15.) * (.006 + .014 * uBrown);
+        vec3 dpx = dFdx(-vViewPosition), dpy = dFdy(-vViewPosition);
+        vec3 r1 = cross(dpy, normal), r2 = cross(normal, dpx);
+        float det = dot(dpx, r1);
+        vec3 grad = sign(det) * (dFdx(bumpH) * r1 + dFdy(bumpH) * r2);
+        normal = normalize(abs(det) * normal - grad);`);
+  };
+
+  /* Chocolate chips and pie lattice appear only for their family */
+  const chipMat = new THREE.MeshStandardMaterial({ color: '#3A1E10', roughness: .38, envMapIntensity: .7 });
+  const latticeMat = new THREE.MeshStandardMaterial({ roughness: .74, envMapIntensity: .5 });
+  latticeMat.onBeforeCompile = shader => {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', 'varying vec3 vLocal;\n#include <common>')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLocal = (modelMatrix * vec4(position, 1.)).xyz;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `varying vec3 vLocal;\n${SHADER_NOISE}\n#include <common>`)
+      .replace('#include <color_fragment>', `#include <color_fragment>
+        float m = fbm3(vLocal * 6.);
+        diffuseColor.rgb *= .62 + .62 * m;`);
+  };
+  const chips = new THREE.Group(), lattice = new THREE.Group();
+  scene.add(chips, lattice);
+  lattice.position.y = .23;
+
+  function buildExtras() {
+    const dummy = new THREE.Object3D(), count = 21;
+    const mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.098, 1), chipMat, count);
+    mesh.castShadow = true;
+    for (let i = 0; i < count; i++) {
+      const r = .82 * Math.sqrt((i + .5) / count), a = i * 2.39996 + hash3(i, 5, 6);
+      const d = new THREE.Vector3(r * Math.cos(a), .2, r * Math.sin(a)).normalize();
+      const { p } = shapes.cookie(d);
+      dummy.position.set(p[0], p[1] - .022, p[2]);
+      dummy.rotation.set(hash3(i, 1, 2) * 3, hash3(i, 2, 3) * 3, 0);
+      const s = .68 + hash3(i, 3, 4) * .72;
+      dummy.scale.set(s, s * .6, s * (.7 + hash3(i, 4, 5) * .6));
+      dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
+    }
+    chips.add(mesh);
+
+    const width = .17, gap = .4;
+    for (const dir of [0, 1]) for (let i = -2; i <= 2; i++) {
+      const offset = i * gap, length = 2 * Math.sqrt(Math.max(.1, 1.1 * 1.1 - offset * offset));
+      const strip = new THREE.Mesh(new RoundedBoxGeometry(length, .045, width, 3, .02), latticeMat);
+      strip.castShadow = true;
+      strip.position.set(dir ? offset : 0, dir * .024, dir ? 0 : offset);
+      strip.rotation.y = dir ? Math.PI / 2 : 0;
+      lattice.add(strip);
+    }
+  }
+
+  /* Steam */
+  const puff = document.createElement('canvas'); puff.width = puff.height = 64;
+  const ctx = puff.getContext('2d'), grad = ctx.createRadialGradient(32, 32, 2, 32, 32, 32);
+  grad.addColorStop(0, 'rgba(255,255,255,.75)'); grad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, 64, 64);
+  const STEAM = 44, steamSeed = Array.from({ length: STEAM }, (_, i) => [hash3(i, 1, 1), hash3(i, 2, 1), hash3(i, 3, 1)]);
+  const steamGeo = new THREE.BufferGeometry();
+  steamGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(STEAM * 3), 3));
+  const steamMat = new THREE.PointsMaterial({ map: new THREE.CanvasTexture(puff), size: .62, transparent: true, depthWrite: false, opacity: 0, color: '#FFE9D2' });
+  const steam = new THREE.Points(steamGeo, steamMat);
+  steam.frustumCulled = false;
+  scene.add(steam);
+
+  /* The glow of the oven's heat, behind the tray */
+  const haloMat = new THREE.SpriteMaterial({ map: steamMat.map, color: '#FF6A1E', blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0 });
+  const halo = new THREE.Sprite(haloMat);
+  halo.scale.set(11, 4.4, 1); halo.position.set(0, .9, -3.2);
+  scene.add(halo);
+
+  let mesh = null;
+  function buildMesh() {
+    let geo = new THREE.IcosahedronGeometry(1, 60);
+    geo.deleteAttribute('normal'); geo.deleteAttribute('uv');
+    geo = mergeVertices(geo, 1e-4);
+    const pos = geo.attributes.position, n = pos.count, index = geo.index;
+    const dirs = new Float32Array(n * 3);
+    const v = new THREE.Vector3();
+    const bake = name => {
+      const P3 = new Float32Array(n * 3), C3 = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        v.fromBufferAttribute(pos, i).normalize();
+        const { p, c } = shapes[name](v);
+        P3.set(p, i * 3); C3.set(c, i * 3);
+      }
+      const temp = new THREE.BufferGeometry();
+      temp.setIndex(index);
+      temp.setAttribute('position', new THREE.BufferAttribute(P3, 3));
+      temp.computeVertexNormals();
+      return { p: temp.attributes.position, n: temp.attributes.normal, c: new THREE.BufferAttribute(C3, 3) };
+    };
+    for (let i = 0; i < n; i++) { v.fromBufferAttribute(pos, i).normalize(); dirs.set([v.x, v.y, v.z], i * 3); }
+    const dough = bake('dough');
+    geo.setAttribute('position', dough.p);
+    geo.setAttribute('normal', dough.n);
+    geo.setAttribute('color', dough.c);
+    geo.setAttribute('aDir', new THREE.BufferAttribute(dirs, 3));
+    const targets = FAMILIES.map(bake);
+    geo.morphAttributes.position = targets.map(t => t.p);
+    geo.morphAttributes.normal = targets.map(t => t.n);
+    geo.morphAttributes.color = targets.map(t => t.c);
+    geo.morphTargetsRelative = false;
+    mesh = new THREE.Mesh(geo, material);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    mesh.frustumCulled = false;
+    scene.add(mesh);
+    buildExtras();
+  }
+
+  /* State and animation */
+  const state = { rise: 1, brown: 1, blend: [1, 0, 0, 0], shown: [1, 0, 0, 0], spin: 0, glow: 0, steam: 0 };
+  const stats = { lastBakeMs: null, bakes: 0, running: false, frames: 0 };
+  let bake = null, tween = null, raf = null, viewport = null;
+
+  function apply(now) {
+    state.shown.forEach((w, i) => { mesh.morphTargetInfluences[i] = w * state.rise; });
+    brownUniform.value = state.brown;
+    const dough = new THREE.Color(...P.dough), crust = new THREE.Color(...mix(P.pie, P.pieDark, .15));
+    latticeMat.color.copy(dough).lerp(crust, state.brown);
+    const show = (w, group) => {
+      const s = smooth(.4, .8, w) * state.rise;
+      group.visible = s > .01;
+      group.scale.setScalar(Math.max(s, .001));
+    };
+    show(state.shown[2], chips); show(state.shown[3], lattice);
+    if (mesh) mesh.rotation.y = chips.rotation.y = lattice.rotation.y = state.spin;
+    fire.intensity = state.glow * 12;
+    haloMat.opacity = state.glow * .6;
+    steamMat.opacity = state.steam * .3;
+    if (state.steam > 0) {
+      const a = steamGeo.attributes.position, t = now / 1000;
+      steamSeed.forEach(([r, h, s], i) => {
+        const life = fract(t * (.16 + s * .14) + r), angle = r * 40 + t * .4;
+        a.setXYZ(i, Math.cos(angle) * (.2 + s * .7), .35 + life * 1.8, Math.sin(angle) * (.2 + h * .7));
+      });
+      a.needsUpdate = true;
+    }
+  }
+  const draw = () => { if (viewport) { renderer.render(scene, camera); stats.frames++; } };
+
+  function frame(now) {
+    raf = null;
+    let more = false;
+    if (bake) {
+      const t = Math.min(BAKE_SECONDS, (now - bake.start) / 1000);
+      state.rise = 1 - Math.pow(1 - clamp(t / 2.4), 3);
+      state.brown = smooth(1, 4.5, t);
+      state.spin = -.7 * (1 - smooth(0, BAKE_SECONDS, t));
+      state.glow = smooth(0, .8, t) * (1 - smooth(4.3, BAKE_SECONDS, t) * .55);
+      state.steam = smooth(1.3, 2.4, t) * (1 - smooth(4, BAKE_SECONDS, t));
+      deck.onBakeProgress?.(t / BAKE_SECONDS);
+      if (t >= BAKE_SECONDS) {
+        stats.lastBakeMs = now - bake.start; stats.running = false; bake = null;
+        deck.onBakeProgress?.(1);
+      } else more = true;
+    }
+    if (tween) {
+      const k = clamp((now - tween.start) / 420), e = k * k * (3 - 2 * k);
+      state.shown = tween.from.map((w, i) => w + (state.blend[i] - w) * e);
+      if (k >= 1) tween = null; else more = true;
+    }
+    apply(now);
+    draw();
+    if (more) raf = requestAnimationFrame(frame);
+  }
+  const wake = () => { if (raf === null) raf = requestAnimationFrame(frame); };
+
+  function resize() {
+    if (!viewport) return;
+    const w = viewport.offsetWidth, h = viewport.offsetHeight;
+    const scale = Math.min(innerWidth / 1600, innerHeight / 900);
+    renderer.setPixelRatio(clamp(devicePixelRatio * scale, 1, 2));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    const away = camera.position.clone().sub(controls.target).normalize();
+    camera.position.copy(controls.target).addScaledVector(away, CAMERA_DISTANCE * Math.max(1, 1.55 / camera.aspect));
+    controls.update();
+    wake();
+  }
+  addEventListener('resize', resize);
+  controls.addEventListener('change', wake);
+
+  const toArray = blend => FAMILIES.map(f => blend[f] ?? 0);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  window.bakery = {
+    FAMILIES, stats,
+    attach(el) {
+      if (!mesh) buildMesh();
+      viewport = el;
+      if (el) { el.prepend(renderer.domElement); resize(); }
+      else { bake = null; stats.running = false; }
+    },
+    /* Plays the five-second bake */
+    bake(blend) {
+      state.blend = toArray(blend); state.shown = [...state.blend]; tween = null;
+      if (reduced.matches) {
+        Object.assign(state, { rise: 1, brown: 1, spin: 0, glow: .45, steam: 0 });
+        stats.lastBakeMs = 0; deck.onBakeProgress?.(1); wake();
+        return;
+      }
+      state.rise = 0; state.brown = 0;
+      bake = { start: performance.now() };
+      stats.running = true; stats.bakes++;
+      wake();
+    },
+    /* Moves to a new blend without replaying the bake */
+    morph(blend) {
+      state.blend = toArray(blend);
+      Object.assign(state, { rise: 1, brown: 1, spin: 0, glow: .45, steam: 0 });
+      bake = null; stats.running = false;
+      tween = { start: performance.now(), from: [...state.shown] };
+      wake();
+    },
+    current: () => [...state.shown],
+  };
+  deck.bakeryReady();
+} catch (problem) {
+  console.warn('3D unavailable:', problem);
+  showFallback();
+}
 </script>
 </body>
 </html>
