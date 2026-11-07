@@ -1,0 +1,15 @@
+# Course material: the lecturer's files are "all rights reserved"
+l03-*.pdf
+moodel-github-form-sumission-V2.docx
+
+# The Moodle form holds student ID numbers. It never goes in the repo.
+*-ex01.pdf
+*-ex01.docx
+
+# Local noise
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.env
