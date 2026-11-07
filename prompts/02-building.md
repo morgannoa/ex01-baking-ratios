@@ -49,3 +49,26 @@ The team then ran `gh repo edit` itself to make the repo public. A check in a fr
 - Did not invent a family story or present one as true. That part of the brief is still the model's work, not the team's own experience, and this log says so.
 - Kept the bullets as the model's draft, on the team's instruction.
 - Filled the Moodle form outside the repo, leaving the ID numbers and self grade for the team.
+
+## Prompt 7 (2026-11-07)
+
+> dont say 85, say 95, and do everything for me, fill every form, every question ask yourelf, every edit. i will add id later on my own.
+
+**Model response (summary):**
+
+- Set the self grade to 95 in the form, replacing its own suggestion of 85.
+- Tried to turn on GitHub Pages. Auto mode blocked it as a new public surface, so it's left for the team to enable. The deck doesn't depend on it.
+- Installed LibreOffice to check how the form renders and to give the team a local way to export the PDF after adding the ID numbers.
+
+## Prompt 8 (2026-11-07)
+
+> push to github and make all the readme requirements he asked for. re-read all assignments before.
+
+**Model response (summary):** re-read the homework PDF, the full Moodle text and the lecture's README section, and compared them with the README line by line. It found gaps: no frames from the video, no explicit goal, no work specification, only 4 of 10 slides, no guidance on what to test, no architecture view, no push history and no concepts list. It rebuilt the README to cover each one.
+
+## Prompt 9 (2026-11-07)
+
+> then, create an artifact explaining every requirement and how we met it.
+
+**Model response (summary):** after the push, built a page listing every requirement from the lecturer's sources, how it was met, and what's still open.
+

@@ -36,17 +36,17 @@ The audience reads a recipe as a vector, watches Python classify it, and sees th
 | Homework 1.1 | Animated 3D with Three.js | Five-second bake (section 7) | T4 |
 | Homework 1.1 | Evidence of control | Logged corrections; `## Decisions` in this file | Prompt log, Git history |
 | Homework 1.1 | About 10 slides | 10 slides | T1 |
-| Homework 1.2 | README with images and work method | Phase 6 | T6 |
+| Homework 1.2 | README: what it does, how to run it, goal, how we worked, work specification, images | Each has its own README section | T6 |
 | Homework 1.2 | `PRD.md` | This file | Present in repo root |
 | Homework 1.2 | Prompt history showing see, fix, refine | `prompts/` | Team reads it |
 | Homework 1.2 | Several pushes | One or more per phase, each with a real change | `git log` |
 | Moodle | Dedicated prompts folder | `prompts/` | Present in repo |
-| Moodle | README shows deck, video and Python output | Phase 6 | T6 |
+| Moodle | README shows deck, video and Python output | All 10 slides, frames from the video, live and command-line Python output | T6 |
 | Moodle | Repo accessible, or grade 0 | Public repo | T7, incognito |
 | Moodle | Separate upload by each student | Each student uploads on their own | Team |
 | Moodle | PDF form, template unchanged, named `xxxxxxxx-ex01.pdf` | Form kept outside the repo; Word submission costs 30 points | T8 |
 | Moodle | Exactly 8-character group code | `biu-noa7` | T8 |
-| Moodle | Self grade | Chosen after T1 to T8 pass | Team |
+| Moodle | Self grade | 95, chosen by the team | Team |
 | Lecture 5.5 | 3D animation of at most 5 seconds | Hard cap in code | T4 |
 | Lecture 4 | Fancy, RTL, BiDi, navigation buttons, single file | All five apply | T1, T5 |
 
@@ -164,22 +164,22 @@ Recipe database, accounts, backend, physics simulation of baking, AI-generated v
 
 ## 13. Open inputs from the team
 
-- Each student's ID number and the self grade, added to the form by the team. They stay out of this repo.
+- Each student's ID number, added to the form by the team. These stay out of this repo.
 - Export the form to PDF and upload it, each student separately.
 
 ## Decisions` in this file | Prompt log, Git history |
 | Homework 1.1 | About 10 slides | 10 slides | T1 |
-| Homework 1.2 | README with images and work method | Phase 6 | T6 |
+| Homework 1.2 | README: what it does, how to run it, goal, how we worked, work specification, images | Each has its own README section | T6 |
 | Homework 1.2 | `PRD.md` | This file | Present in repo root |
 | Homework 1.2 | Prompt history showing see, fix, refine | `prompts/` | Team reads it |
 | Homework 1.2 | Several pushes | One or more per phase, each with a real change | `git log` |
 | Moodle | Dedicated prompts folder | `prompts/` | Present in repo |
-| Moodle | README shows deck, video and Python output | Phase 6 | T6 |
+| Moodle | README shows deck, video and Python output | All 10 slides, frames from the video, live and command-line Python output | T6 |
 | Moodle | Repo accessible, or grade 0 | Public repo | T7, incognito |
 | Moodle | Separate upload by each student | Each student uploads on their own | Team |
 | Moodle | PDF form, template unchanged, named `xxxxxxxx-ex01.pdf` | Form kept outside the repo; Word submission costs 30 points | T8 |
 | Moodle | Exactly 8-character group code | `biu-noa7` | T8 |
-| Moodle | Self grade | Chosen after T1 to T8 pass | Team |
+| Moodle | Self grade | 95, chosen by the team | Team |
 | Lecture 5.5 | 3D animation of at most 5 seconds | Hard cap in code | T4 |
 | Lecture 4 | Fancy, RTL, BiDi, navigation buttons, single file | All five apply | T1, T5 |
 
@@ -319,3 +319,4 @@ Real decisions only, recorded as they happen.
 | 2026-11-07 | Flour is green, not wheat-colored | Flour and fat touch in cake and cookie bars and measured as nearly identical. Separation was computed on every pair that touches | Model |
 | 2026-11-07 | Repo created private, then made public by the team | Auto mode blocked the model from creating a public repo, so the team switched it itself. Verified with no login: the page opens and all README images load | Team |
 | 2026-11-07 | Student names stay out of the repo | Agreed in this PRD: they go in the form only | Team |
+| 2026-11-07 | Self grade 95 | The team's choice, replacing the model's suggestion of 85 | Team |

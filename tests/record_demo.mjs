@@ -35,12 +35,15 @@ await shot('slide-03');
 
 await next();                                        // 4
 for (let i = 0; i < 2; i++) { await page.click('#s4 [data-next-step]'); await pause(800); }
+await shot('slide-04');
 await next();                                        // 5
 for (let i = 0; i < 2; i++) { await page.click('#s5 [data-next-step]'); await pause(800); }
+await shot('slide-05');
 await next();                                        // 6
 await page.click('[data-twin="pie"]'); await pause(1200);
 await page.click('[data-twin="cookie"]'); await pause(900);
 await page.click('[data-twin="pie"]'); await pause(800);
+await shot('slide-06');
 
 mark('oven');
 await next(300);                                     // 7
