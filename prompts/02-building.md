@@ -72,3 +72,9 @@ The team then ran `gh repo edit` itself to make the repo public. A check in a fr
 
 **Model response (summary):** after the push, built a page listing every requirement from the lecturer's sources, how it was met, and what's still open.
 
+## Prompt 10 (2026-11-07)
+
+> write it in hebrew, the artifact
+
+**Model response (summary):** rewrote the requirements page in Hebrew, right to left, and checked that every text block computes as RTL with English terms isolated.
+
