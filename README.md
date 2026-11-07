@@ -65,6 +65,15 @@ Each row is one control to try and what it should do.
 | ![Slide 7](assets/slide-07.png) **7. The oven (3D)** | ![Slide 8](assets/slide-08.png) **8. Python lab** |
 | ![Slide 9](assets/slide-09.png) **9. Where it breaks** | ![Slide 10](assets/slide-10.png) **10. Your turn** |
 
+## Beyond the requirements
+
+- **One argument, not a recipe collection.** Every slide serves the same claim.
+- **Python does a real job.** It applies cosine similarity from the course to a new problem: recipes as vectors, where ignoring size matches how baker's percentages ignore batch size.
+- **The 3D object is the answer.** Python's numbers set its shape directly, so the two aren't separate decorations.
+- **The deck reports its own failures.** Slide 9 shows where the method is wrong and what a vector can't see.
+- **The deck bakes as you advance.** Each slide is one shade browner, from raw dough to dark crust, and the progress strip browns with it.
+- **Alignment is tested, not assumed.** The RTL audit measures it in two browser engines.
+
 ## Work specification
 
 | Item | Specification | Where |
@@ -178,7 +187,8 @@ The real prompts are in [`prompts/`](prompts/), in order.
 | `c304cb7` | Recipe data verified at the source, colors rebuilt, README, video |
 | `b198d75` | Challah on slide 10, team review recorded, repo public |
 | `9cbd4f8` | New screenshots and video frames, self grade recorded. Its message wrongly says the README changed, because that write had failed |
-| Latest | README rebuilt against the assignment text |
+| `f55ed48` | README rebuilt against the assignment text |
+| Latest | Section restored on what goes beyond the requirements |
 
 ### What checking caught
 
