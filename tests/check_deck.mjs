@@ -287,6 +287,7 @@ await page.fill('#yours input[data-ing="flour"]', '500');
 await page.fill('#yours input[data-ing="liquid"]', '300');
 await page.click('#yours button[type="submit"]');
 check('Typed recipe gets an answer from Python', (await page.textContent('#yours-verdict')).includes('לחם'));
+check('Slide 10 carries the team\'s Friday baking', (await page.textContent('#s10 .ours')).includes('קידוש'));
 await page.click('#yours-challah');
 const challah = await page.textContent('#yours-verdict');
 check('Challah sample fills the form and reads as bread',

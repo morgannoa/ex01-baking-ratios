@@ -14,17 +14,24 @@ The audience reads a recipe as a vector, watches Python classify it, and sees th
 
 ## 2. Team brief
 
-> **Provenance:** the team supplied the topic ("baking: cakes, breads, cookies, pies") and asked the model to draft the rest. These bullets are the model's draft. The team accepted them as written and asked the model to handle this part itself.
+**Points from the team:**
 
-1. Topic: baking, covering breads, cakes, cookies and pies.
-2. Don't make a recipe collection. Make one argument: everything comes from the same five ingredients.
-3. Teach baker's percentages, because they let you compare any two recipes regardless of batch size.
-4. Python does a real job: it turns a recipe into a vector and finds its closest family with cosine similarity, the method taught in lecture 3.
-5. The 3D object responds to Python's answer, so the two aren't separate decorations.
-6. Don't use a spinning doughnut. It is the lecture's own example.
-7. Show where the method fails. Admitting it is more honest and more interesting than hiding it.
-8. Include one real recipe from our own kitchen.
-9. Deck in Hebrew with correct RTL and BiDi. Engineering documents and prompts in English, as the lecture recommends for token cost.
+1. Topic: baking, covering cakes, breads, cookies and pies.
+2. Both of us love to bake. We bake every Friday for our family's kiddush.
+3. The deck is in Hebrew.
+4. RTL from end to end, with every component aligned correctly.
+5. A good-looking Hebrew font from Google Fonts.
+6. The repository lives on the `morgannoa` GitHub account.
+
+**Points the model proposed and the team accepted:**
+
+1. Don't make a recipe collection. Make one argument: everything comes from the same five ingredients.
+2. Teach baker's percentages, because they let you compare any two recipes regardless of batch size.
+3. Python does a real job: it turns a recipe into a vector and finds its closest family with cosine similarity, the method taught in lecture 3.
+4. The 3D object responds to Python's answer, so the two aren't separate decorations.
+5. Don't use a spinning doughnut. It is the lecture's own example.
+6. Show where the method fails.
+7. Keep engineering documents and prompts in English, as the lecture recommends for token cost.
 
 ## 3. Requirements traceability
 
@@ -320,3 +327,4 @@ Real decisions only, recorded as they happen.
 | 2026-11-07 | Repo created private, then made public by the team | Auto mode blocked the model from creating a public repo, so the team switched it itself. Verified with no login: the page opens and all README images load | Team |
 | 2026-11-07 | Student names stay out of the repo | Agreed in this PRD: they go in the form only | Team |
 | 2026-11-07 | Self grade 95 | The team's choice, replacing the model's suggestion of 85 | Team |
+| 2026-11-07 | Add the Friday kiddush baking to slide 10 and the README | The team's own reason for the topic | Team |

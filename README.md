@@ -10,6 +10,10 @@ Assignment 01, Generative AI course, Bar-Ilan University, Dr. Yoram Segal. Group
 
 Show that **bread, cake, cookies and pie are the same five ingredients in different ratios**, and test that claim instead of only stating it. The audience reads a recipe as a vector, watches Python classify it, sees the result bake in 3D, and then sees where the method fails.
 
+## Why this topic
+
+We both love to bake. We do it every Friday for our kiddush with the family, so we know this subject well enough to catch a wrong claim about it. Slide 10 ends on a Friday challah.
+
 ## What this repository does
 
 It holds the presentation and everything behind it: the Python classifier, 12 published test recipes, the automated checks, the product requirements document and the prompts used to build it.
@@ -86,7 +90,7 @@ Each row is one control to try and what it should do.
 | 3D animation | Three.js, one mesh with four morph targets, bake under 5 seconds | Slides 7, 8 |
 | Data | 12 published recipes, 3 per family, with sources | `python/sourced_recipes.py` |
 | Failure handling | Results computed in advance if Python can't load, a still image if 3D can't | Slides 7, 8 |
-| Testing | 52 browser checks in Chrome and Safari's engine, and 13 Python tests | `tests/` |
+| Testing | 53 browser checks in Chrome and Safari's engine, and 13 Python tests | `tests/` |
 | Documents | README, PRD and prompt log | Repository root and `prompts/` |
 
 The full plan, acceptance tests and decision log are in [`PRD.md`](PRD.md).
@@ -168,7 +172,7 @@ flowchart LR
 
 | Stage | The team | The model (Claude Code) |
 |---|---|---|
-| Planning | Chose the topic, accepted the PRD | Drafted the bullets at the team's request, wrote the PRD |
+| Planning | Chose the topic from their own Friday baking, set the main points, accepted the PRD | Proposed the rest of the points, wrote the PRD |
 | Building | Set the requirements: Hebrew, RTL end to end, every component aligned, Google Fonts | Wrote the code and the files |
 | Checking | Reviewed the finished deck | Wrote and ran the tests, and fixed what they found |
 | Documenting | Made the repo public, asked for this README to be checked against the assignment | Wrote the README, pushed each stage |
@@ -188,7 +192,9 @@ The real prompts are in [`prompts/`](prompts/), in order.
 | `b198d75` | Challah on slide 10, team review recorded, repo public |
 | `9cbd4f8` | New screenshots and video frames, self grade recorded. Its message wrongly says the README changed, because that write had failed |
 | `f55ed48` | README rebuilt against the assignment text |
-| Latest | Section restored on what goes beyond the requirements |
+| `779b96b` | Section restored on what goes beyond the requirements |
+| `56cce0a` | Prompt log updated |
+| Latest | The team's Friday baking added, and the PRD's points split by who gave them |
 
 ### What checking caught
 
@@ -230,7 +236,7 @@ The real prompts are in [`prompts/`](prompts/), in order.
 ```bash
 pytest tests                                  # 13 Python tests
 cd tests && npm install --ignore-scripts
-npm run check                                 # 52 browser checks in Chrome
+npm run check                                 # 53 browser checks in Chrome
 npx playwright install webkit
 BROWSER=webkit npm run check                  # the same checks in Safari's engine
 ```

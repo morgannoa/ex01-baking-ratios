@@ -78,3 +78,11 @@ The team then ran `gh repo edit` itself to make the repo public. A check in a fr
 
 **Model response (summary):** rewrote the requirements page in Hebrew, right to left, and checked that every text block computes as RTL with English terms isolated.
 
+## Prompt 11 (2026-11-07)
+
+> `[start of this prompt omitted; no changes came from it]`
+>
+> regarding "האישיות שלכם בעבודה" , state that both of us love to bake, we do it every friday for our kiddush with the family. super personal.
+
+**Model response (summary):** added the team's Friday baking to slide 10, the README and the PRD, and split the PRD's points into those the team gave and those the model proposed and the team accepted.
+
