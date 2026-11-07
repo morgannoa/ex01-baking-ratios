@@ -69,12 +69,13 @@ RECIPES = [
         "id": "toll_house",
         "name_he": "שוקולד צ׳יפס",
         "family": "cookie",
-        "grams": {"flour": 280, "fat": 227, "sugar": 315, "egg": 100},
+        "grams": {"flour": 360, "fat": 220, "sugar": 315, "egg": 100},
         "source": "Original Nestlé Toll House recipe, via Cooking for Engineers",
         "url": "https://CookingForEngineers.com/recipe/185/Nestle-Toll-House-Chocolate-Chip-Cookies",
         "converted": (
-            "2 1/4 cups flour as 280 g (the source's sifted figure), 1 cup butter as 227 g, "
-            "3/4 cup granulated as 150 g plus 3/4 cup brown as 165 g, 2 eggs as 100 g."
+            "The recipe is in cups. Grams are the source author's conversion: flour 360 g, "
+            "which he concludes was intended (280 g if sifted), butter 220 g, sugars 150 g "
+            "plus 165 g, eggs 100 g."
         ),
     },
     {
@@ -101,7 +102,10 @@ RECIPES = [
         "grams": {"flour": 250, "liquid": 80, "fat": 125},
         "source": "Magimix, Shortcrust Pastry (Pâte Brisée)",
         "url": "https://magimix.com.au/recipes/shortcrust-pastry-pate-brisee",
-        "converted": "80 ml water counted as 80 g.",
+        "converted": (
+            "80 ml water counted as 80 g. The page refuses automated reading, so these "
+            "figures come from a search result, not a direct read."
+        ),
     },
     {
         "id": "pate_sucree",

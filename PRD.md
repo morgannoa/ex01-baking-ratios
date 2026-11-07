@@ -63,9 +63,9 @@ The audience reads a recipe as a vector, watches Python classify it, and sees th
 | 7 | The oven | Five-second bake in 3D | Replay, drag to rotate |
 | 8 | Python lab | Live classifier driving the 3D object | Sliders, recipe presets |
 | 9 | Where it breaks | Brioche, pâte sucrée, and what cosine can't see | Reveal |
-| 10 | Our kitchen | Our real recipe run through the lab; closing line | Sources panel |
+| 10 | Your turn | Closing line, and a form that classifies a typed recipe. Becomes "Our kitchen" once the team supplies its recipe | Recipe form |
 
-All facts carry a source in the sources panel.
+All facts carry a source in the sources panel, which is reachable from every slide.
 
 ## 5. Interface
 
@@ -127,13 +127,13 @@ python/recipe_vectors.py   classifier, source of truth
 python/sourced_recipes.py  the 12 published test recipes
 python/inline_python.py    copies the classifier into index.html
 python/make_charts.py      charts for the README
-tests/                     automated checks
+tests/                     browser audit, Python tests, demo recorder
 assets/                    screenshots, video, charts
 ```
 
 ## 9. Video
 
-A 30 to 60 second screen capture of the deck running. A screen capture rather than an AI-generated video, following the lecture's token-economics argument: animation of objects carries the same message for far fewer resources.
+A 55-second screen capture of the deck running, in the planned 30 to 60 second range. A screen capture rather than an AI-generated video, following the lecture's token-economics argument: animation of objects carries the same message for far fewer resources.
 
 ## 10. Risks
 
@@ -181,3 +181,7 @@ Real decisions only, recorded as they happen.
 | 2026-11-07 | Deck in Hebrew, RTL end to end, every component aligned | Team requirement | Team |
 | 2026-11-07 | Suez One and Heebo | Rendered candidates with the deck's real text and compared them | Model, on the team's instruction to use Google Fonts |
 | 2026-11-07 | Report 9 of 12, not 10 of 12 | Published recipes replaced remembered ones | Model, under the rule in this PRD |
+| 2026-11-07 | Slide 10 uses a typed recipe for now | The team hasn't supplied a recipe yet, and inventing a personal story isn't acceptable | Model |
+| 2026-11-07 | Toll House uses 360 g flour, not 280 g | The source concludes 360 g was intended. The result stays a miss, so this doesn't help the score | Model, after reading the source directly |
+| 2026-11-07 | Flour is green, not wheat-colored | Flour and fat touch in cake and cookie bars and measured as nearly identical. Separation was computed on every pair that touches | Model |
+| 2026-11-07 | Repo created private | Auto mode blocked the model from creating a public repo. Going public is the team's step | Team to act |

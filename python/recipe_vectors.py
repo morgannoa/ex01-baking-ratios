@@ -44,7 +44,7 @@ def bakers_percentages(grams):
 
 
 def cosine(a, b):
-    """Cosine of the angle between two vectors: 1.0 means the same direction."""
+    """Cosine of the angle between two vectors. 1.0 means parallel."""
     dot = sum(x * y for x, y in zip(a, b))
     return dot / (math.hypot(*a) * math.hypot(*b))
 
@@ -53,7 +53,10 @@ def classify(grams):
     """Rank the four families for a recipe given in grams."""
     percentages = bakers_percentages(grams)
     vector = tuple(percentages[name] for name in INGREDIENTS)
-    scores = {name: cosine(vector, ref) for name, ref in FAMILIES.items()}
+    scores = {
+        name: cosine(vector, ref)
+        for name, ref in FAMILIES.items()
+    }
     ranking = sorted(scores, key=scores.get, reverse=True)
 
     weights = {
@@ -69,7 +72,10 @@ def classify(grams):
         "closest": ranking[0],
         "runner_up": ranking[1],
         "gap": scores[ranking[0]] - scores[ranking[1]],
-        "blend": {name: weight / total for name, weight in weights.items()},
+        "blend": {
+            name: weight / total
+            for name, weight in weights.items()
+        },
     }
 
 

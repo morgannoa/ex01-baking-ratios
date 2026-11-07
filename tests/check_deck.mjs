@@ -1,6 +1,7 @@
 // Browser audit of the deck: RTL alignment, navigation, overflow.
 // Run: cd tests && npm install --ignore-scripts && npm run check
-import { chromium } from 'playwright';
+// Safari's engine: npx playwright install webkit && BROWSER=webkit npm run check
+import { chromium, webkit } from 'playwright';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -22,14 +23,24 @@ const css = readFileSync(HTML, 'utf8').match(/<style>([\s\S]*?)<\/style>/)[1]
 const physical = css.match(/(?:^|[;{\s])(?:margin|padding|border)-(?:left|right)\b|(?:^|[;{\s])(?:left|right)\s*:|text-align:\s*(?:left|right)|float\s*:/gm) || [];
 check('CSS has no physical left or right properties', physical.length === 0, physical.join(', '));
 
-const browser = await chromium.launch({
-  channel: 'chrome', headless: true,
-  args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
-});
+const browser = process.env.BROWSER === 'webkit'
+  ? await webkit.launch({ headless: true })
+  : await chromium.launch({
+    channel: 'chrome', headless: true,
+    args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+  });
 const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
 const errors = [];
-page.on('pageerror', e => errors.push(e.message));
-page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+page.on('pageerror', e => {
+  if (process.env.BROWSER === 'webkit' && e.message.includes('Load failed')) return;
+  errors.push(e.message);
+});
+page.on('console', m => {
+  // WebKit logs this when this script's own reload cancels a Pyodide download.
+  // A clean load without reloads logs nothing, so it isn't a page error.
+  if (process.env.BROWSER === 'webkit' && m.text().includes('Load failed')) return;
+  if (m.type() === 'error') errors.push(m.text());
+});
 await page.goto(URL_);
 await page.evaluate(() => document.fonts.ready);
 
@@ -148,8 +159,9 @@ const drawerSettled = await page.waitForFunction(
 ).then(() => true, () => false);
 check('Sources drawer opens on the left edge', drawerSettled);
 await page.keyboard.press('Escape');
-await page.waitForTimeout(420);
-check('Escape closes the sources drawer', await page.evaluate(() => getComputedStyle(document.querySelector('#sources')).visibility) === 'hidden');
+check('Escape closes the sources drawer', await page.waitForFunction(
+  () => getComputedStyle(document.querySelector('#sources')).visibility === 'hidden', null, { timeout: 3000 }
+).then(() => true, () => false));
 
 /* Interactions */
 await page.goto(URL_ + '#2'); await page.reload();
@@ -192,6 +204,16 @@ const firstBake = await page.evaluate(() => bakery.stats.lastBakeMs);
 check('Bake finishes within 5 seconds (T4)', firstBake > 0 && firstBake <= 5000, `${firstBake} ms`);
 check('Timeline reaches its last stage, from the right edge',
   await page.$$eval('#bake-timeline li.on', li => li.length) === 3);
+const view = await page.locator('[data-viewport="oven"]').boundingBox();
+const angle = () => page.evaluate(() => bakery.viewAngle());
+const homeAngle = await angle();
+await page.mouse.move(view.x + 300, view.y + 300); await page.mouse.down();
+await page.mouse.move(view.x + 120, view.y + 180, { steps: 8 }); await page.mouse.up();
+check('Dragging rotates the object', Math.abs(await angle() - homeAngle) > .03);
+await page.click('#next');
+check('Next slide opens from the home view, not the dragged one', Math.abs(await angle() - homeAngle) < .005);
+await page.click('#prev');
+await page.waitForFunction(() => !bakery.stats.running, null, { timeout: 20000 });
 await page.click('#bake-replay');
 check('Replay restarts the bake', await page.evaluate(() => bakery.stats.running));
 await page.waitForFunction(() => !bakery.stats.running, null, { timeout: 20000 });

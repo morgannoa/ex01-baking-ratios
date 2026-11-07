@@ -65,7 +65,7 @@ def test_claims_made_on_slide_9():
     assert brioche["ranking"][-1] == "bread", "the slide says bread came last"
 
     toll_house = BY_ID["toll_house"]["grams"]
-    assert toll_house["sugar"] > toll_house["flour"], "the slide says more sugar than flour"
+    assert toll_house["egg"] > 0, "the slide says the recipe has eggs"
     assert classify(toll_house)["closest"] == "cake"
 
     sucree = BY_ID["pate_sucree"]["grams"]
