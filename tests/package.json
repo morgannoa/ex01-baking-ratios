@@ -1,0 +1,8 @@
+{
+  "name": "deck-checks",
+  "private": true,
+  "type": "module",
+  "description": "Browser checks for the presentation. Uses the installed Chrome, so no browser download.",
+  "scripts": { "check": "node check_deck.mjs" },
+  "devDependencies": { "playwright": "^1.65.0" }
+}

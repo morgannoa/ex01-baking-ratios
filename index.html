@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="he" dir="rtl" data-slide="1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אותם חמישה מרכיבים</title>
+<meta name="description" content="מצגת אינטראקטיבית על אפייה: לחם, עוגה, עוגייה ופאי הם אותם חמישה מרכיבים ביחסים שונים.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&family=Suez+One&display=swap" rel="stylesheet">
+<style>
+/* RTL rule for this file: logical properties only. No physical left or right,
+   except inside the .ltr-block exception for code and formulas.
+   The deck bakes as it advances: each slide's palette is one shade browner,
+   from raw dough on slide 1 to dark crust on slide 10. */
+:root {
+  --bg: #F9F2E4; --ink: #3A2314; --muted: #5C422C; --panel: #FFFBF2;
+  --line: rgba(58, 35, 20, .16); --accent: #A04A1A; --on-accent: #FFF8EC;
+  --flour: #C9B083; --liquid: #3A86A8; --fat: #E3B01F; --sugar: #C8557F; --egg: #E6762A;
+  --display: 'Suez One', 'Frank Ruhl Libre', serif;
+  --body: 'Heebo', 'Assistant', system-ui, sans-serif;
+  --code: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --gutter: 88px;
+}
+html[data-slide="2"]  { --bg: #F7ECD7; }
+html[data-slide="3"]  { --bg: #F5E5C6; }
+html[data-slide="4"]  { --bg: #F1DAAF; }
+html[data-slide="5"]  { --bg: #EDCF9A; }
+html[data-slide="6"]  { --bg: #E8C381; --muted: #4F3621; }
+html[data-slide="7"], html[data-slide="8"] {
+  --bg: #1B0F09; --ink: #FBEFD9; --muted: #D8BE9C; --panel: #2C1A10;
+  --line: rgba(251, 239, 217, .18); --accent: #F0A24A; --on-accent: #2A1408;
+}
+html[data-slide="9"] {
+  --bg: #2B170D; --ink: #FBEFD9; --muted: #DCC4A4; --panel: #3C2415;
+  --line: rgba(251, 239, 217, .18); --accent: #F0A24A; --on-accent: #2A1408;
+}
+html[data-slide="10"] {
+  --bg: #5A3117; --ink: #FFF3DD; --muted: #F0D9B8; --panel: #6E4022;
+  --line: rgba(255, 243, 221, .24); --accent: #FFC76B; --on-accent: #3A1E0C;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; background: var(--bg); transition: background-color .6s ease; }
+body { font-family: var(--body); color: var(--ink); font-size: 24px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ol, ul, table { margin: 0; padding: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.12; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+bdi { unicode-bidi: isolate; }
+
+/* Fixed 16:9 stage, scaled to the window, so that layout is identical everywhere */
+#stage {
+  position: fixed; inset-block-start: 50%; inset-inline-start: 50%;
+  width: 1600px; height: 900px; overflow: clip; /* clip, because a hidden box can still be scrolled by focus */
+  transform: translate(50%, -50%) scale(var(--scale, 1));
+}
+.slide {
+  position: absolute; inset: 0; padding: 60px var(--gutter) 124px;
+  display: grid; grid-template-rows: auto minmax(0, 1fr); row-gap: 32px;
+  opacity: 0; visibility: hidden; transform: translateX(-28px);
+  transition: opacity .38s ease, transform .38s ease, visibility 0s linear .38s;
+}
+.slide.active { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+@media (prefers-reduced-motion: reduce) {
+  html, body, .slide, .slide.active { transition: none; transform: none; }
+}
+
+.foot-row { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.kicker { font-weight: 700; font-size: 20px; color: var(--accent); margin-block-end: 8px; }
+.head h2 { font-size: 56px; }
+.lede { font-size: 28px; color: var(--muted); }
+.note { font-size: 20px; color: var(--muted); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 28px 32px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 12px; min-height: 56px; padding-inline: 28px;
+  border: 1px solid var(--line); border-radius: 14px; background: transparent; font-weight: 700; font-size: 22px;
+}
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn svg { width: 22px; height: 22px; flex: none; }
+.seg { display: inline-flex; justify-self: start; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+.seg button { min-height: 48px; padding-inline: 22px; border: 0; border-radius: 10px; background: transparent; font-weight: 700; font-size: 20px; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+/* Bottom bar. In RTL the previous button sits on the right and next on the left */
+#bar {
+  position: absolute; inset-inline: var(--gutter); inset-block-end: 28px; z-index: 5;
+  display: flex; align-items: center; gap: 20px; height: 64px;
+}
+#strip { flex: 1; display: flex; gap: 6px; align-items: center; }
+#strip button { flex: 1; height: 14px; padding: 0; border: 1px solid var(--line); border-radius: 7px; background: transparent; }
+#strip button.done { background: var(--tone); }
+#counter { font-size: 20px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+
+/* Stacked ratio bar: the first ingredient sits at the right */
+.stack { display: flex; gap: 3px; height: 44px; inline-size: 100%; }
+.stack i { display: block; border-radius: 5px; min-inline-size: 0; transition: flex-grow .5s ease, background-color .5s ease; }
+.c-flour  { --c: var(--flour); }  .c-liquid { --c: var(--liquid); } .c-fat { --c: var(--fat); }
+.c-sugar  { --c: var(--sugar); }  .c-egg    { --c: var(--egg); }
+.stack i { background: var(--c); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 20px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { inline-size: 16px; block-size: 16px; border-radius: 4px; background: var(--c); }
+
+/* Ratio chips: number above its ingredient, flowing from the right */
+.ratio { display: flex; gap: 14px; }
+.ratio-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 32px; align-items: center; }
+.ratio-row .stack { height: 64px; }
+.ratio div { min-inline-size: 118px; padding: 14px 22px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); border-block-start: 6px solid var(--c); }
+.ratio b { display: block; font-family: var(--display); font-weight: 400; font-size: 52px; line-height: 1; }
+.ratio span { font-size: 20px; color: var(--muted); }
+
+/* Numbered steps, ordered from the right */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; min-block-size: 0; }
+.step { position: relative; padding: 26px 28px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); transition: opacity .35s ease; }
+.step.dim { opacity: .3; }
+.step .num { display: grid; place-items: center; inline-size: 44px; block-size: 44px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-family: var(--display); font-size: 24px; margin-block-end: 14px; }
+.step h3 { font-size: 40px; margin-block-end: 10px; }
+.step p { font-size: 26px; line-height: 1.4; }
+
+/* Slide 1 */
+.hero { grid-row: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 72px; align-items: center; }
+.hero h1 { font-size: 104px; margin-block-end: 24px; }
+.hero .lede { margin-block-end: 36px; max-inline-size: 640px; }
+.hero small { display: block; margin-block-start: 28px; font-size: 19px; color: var(--muted); }
+.family-bars { display: grid; gap: 28px; }
+.family-bars .stack { height: 66px; }
+.family-bars .row { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 18px; font-weight: 700; }
+
+/* Slide 2 */
+.ingredients { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; min-block-size: 0; }
+.ing { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; block-size: 100%; padding: 28px 26px; text-align: start; background: var(--panel); border: 1px solid var(--line); border-block-start: 8px solid var(--c); border-radius: 18px; }
+.ing:hover { border-color: var(--c); }
+.ing svg { inline-size: 84px; block-size: 84px; color: var(--c); margin-block-end: 10px; }
+.ing h3 { font-size: 44px; }
+.ing .role { font-weight: 700; color: var(--accent); font-size: 24px; }
+.ing .more { font-size: 22px; line-height: 1.38; margin-block-start: 10px; opacity: 0; transition: opacity .3s ease; }
+.ing .cue { margin-block-start: auto; font-size: 19px; font-weight: 500; color: var(--muted); }
+.ing[aria-expanded="true"] .cue { visibility: hidden; }
+.ing[aria-expanded="true"] .more { opacity: 1; }
+.body-stack { display: grid; gap: 24px; align-content: start; min-block-size: 0; }
+.body-stack.fill { block-size: 100%; grid-template-rows: auto minmax(0, 1fr) auto; }
+.body-stack.two-rows { grid-template-rows: minmax(0, 1fr) auto; }
+.body-stack.two-rows-end { grid-template-rows: minmax(0, 1fr) auto auto; }
+
+/* Slide 3 */
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: stretch; min-block-size: 0; }
+.formula { padding: 30px 32px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); font-size: 29px; font-weight: 500; }
+.formula b { color: var(--accent); }
+table.grid { inline-size: 100%; border-collapse: collapse; font-size: 32px; }
+table.grid th, table.grid td { text-align: start; padding: 18px 14px; border-block-end: 1px solid var(--line); }
+table.grid th { font-size: 20px; font-weight: 700; color: var(--muted); }
+table.grid td { font-variant-numeric: tabular-nums; }
+table.grid td.strong { font-weight: 800; color: var(--accent); }
+.flash { animation: flash .5s ease; }
+@keyframes flash { from { background: color-mix(in srgb, var(--accent) 22%, transparent); } }
+
+/* Slide 6 */
+.twin .stack { height: 96px; }
+.twin h3 { font-size: 42px; }
+.twin-why { font-size: 27px; min-height: 160px; }
+.twin .ratio div { min-inline-size: 150px; padding: 22px 28px; }
+.twin .ratio b { font-size: 80px; }
+.twin .ratio span { font-size: 25px; }
+
+/* Slides 7 and 8: 3D viewport */
+.viewport { position: relative; border-radius: 18px; overflow: hidden; background: radial-gradient(120% 90% at 50% 100%, #4A2410 0%, #24130B 55%, #160B06 100%); border: 1px solid var(--line); min-block-size: 0; }
+.viewport canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; display: block; touch-action: none; cursor: grab; }
+.viewport canvas:active { cursor: grabbing; }
+.viewport .hint { position: absolute; inset-block-end: 14px; inset-inline-start: 18px; font-size: 18px; color: #E8D2B4; pointer-events: none; }
+.viewport .fail { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: #E8D2B4; font-size: 22px; }
+.oven { display: grid; grid-template-columns: minmax(0, 460px) minmax(0, 1fr); gap: 40px; min-block-size: 0; }
+.oven-side { display: grid; gap: 20px; align-content: start; }
+.timeline { display: grid; gap: 14px; }
+.timeline li { list-style: none; padding-block: 12px; padding-inline-start: 18px; border-inline-start: 5px solid var(--line); font-size: 22px; color: var(--muted); transition: border-color .25s ease, color .25s ease; }
+.timeline li b { display: block; font-family: var(--display); font-weight: 400; font-size: 27px; }
+.timeline li.on { border-inline-start-color: var(--accent); color: var(--ink); }
+
+/* Slide 8: lab */
+.head.split { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+.head.split h2 { font-size: 48px; }
+.lab { row-gap: 22px; padding-block-start: 44px; }
+.lab-grid { display: grid; grid-template-columns: minmax(0, 500px) minmax(0, 440px) minmax(0, 1fr); gap: 20px; min-block-size: 0; }
+.lab-grid .panel { padding: 20px 22px; min-block-size: 0; }
+.chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); font-size: 18px; font-weight: 500; white-space: nowrap; }
+.chip::before { content: ""; inline-size: 10px; block-size: 10px; border-radius: 50%; background: var(--muted); }
+.chip[data-state="ready"]::before { background: #6FCF7F; }
+.chip[data-state="fallback"]::before { background: #F0A24A; }
+.presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-block-end: 12px; }
+.presets button { min-height: 36px; padding-inline: 8px; border: 1px solid var(--line); border-radius: 9px; background: transparent; font-size: 17px; font-weight: 500; white-space: nowrap; }
+.presets button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.slider { display: grid; grid-template-columns: 64px minmax(0, 1fr) 96px; align-items: center; gap: 12px; min-height: 42px; font-size: 19px; font-weight: 500; }
+.slider output { text-align: start; font-variant-numeric: tabular-nums; }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; inline-size: 100%; block-size: 10px; margin: 0; border-radius: 5px;
+  /* Filled from the right, since RTL puts the minimum there */
+  background: linear-gradient(to left, var(--c) var(--fill, 0%), var(--line) var(--fill, 0%));
+}
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; inline-size: 22px; block-size: 22px; border-radius: 50%; background: var(--ink); border: 3px solid var(--c); }
+input[type="range"]::-moz-range-thumb { inline-size: 16px; block-size: 16px; border-radius: 50%; background: var(--ink); border: 3px solid var(--c); }
+.lab-actions { display: flex; gap: 10px; margin-block-start: 10px; }
+.lab-actions .btn { min-height: 44px; font-size: 18px; padding-inline: 16px; }
+.answer h3 { font-size: 58px; color: var(--accent); }
+.answer p { font-size: 19px; color: var(--muted); }
+.ranks { display: grid; gap: 10px; margin-block: 14px; }
+.rank { display: grid; grid-template-columns: 70px minmax(0, 1fr) 54px; align-items: center; gap: 10px; font-size: 19px; font-weight: 500; }
+.rank .track { block-size: 14px; border-radius: 7px; background: var(--line); }
+.rank .track i { display: block; block-size: 100%; border-radius: 7px; background: var(--muted); transition: inline-size .35s ease; }
+.rank.top .track i { background: var(--accent); }
+.rank output { font-variant-numeric: tabular-nums; text-align: start; }
+.explain { font-size: 18px; line-height: 1.4; color: var(--muted); }
+.lab-view { position: relative; display: grid; min-block-size: 0; }
+.lab-view .viewport { grid-area: 1 / 1; }
+.lab-view .btn { position: absolute; inset-block-start: 12px; inset-inline-end: 12px; min-height: 40px; font-size: 17px; padding-inline: 14px; background: var(--panel); z-index: 2; }
+
+/* The one deliberate LTR exception: code and formulas stay in their own direction */
+.ltr-block { direction: ltr; text-align: left; unicode-bidi: isolate; }
+pre.code { grid-area: 1 / 1; z-index: 1; overflow: auto; margin: 0; padding: 60px 18px 18px; border-radius: 18px; background: #120A06; border: 1px solid var(--line); color: #F4E2C6; font: 400 14.5px/1.5 var(--code); }
+pre.code[hidden] { display: none; }
+
+/* Slide 9 */
+.misses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.miss { padding: 24px 26px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
+.miss h3 { font-size: 40px; margin-block-end: 12px; }
+.miss dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; margin: 0 0 16px; font-size: 23px; }
+.miss dt { color: var(--muted); }
+.miss dd { margin: 0; font-weight: 700; }
+.miss p { font-size: 24px; line-height: 1.4; }
+.head.split .score { font-family: var(--display); font-size: 40px; color: var(--accent); white-space: nowrap; }
+
+/* Slide 10 */
+.close { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; grid-row: 1 / -1; }
+.close h2 { font-size: 92px; margin-block-end: 20px; }
+#yours h3 { font-size: 40px; margin-block-end: 6px; }
+.fields { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-block: 16px; }
+.fields label { display: grid; gap: 6px; font-size: 19px; font-weight: 500; }
+.fields input { inline-size: 100%; min-height: 54px; padding-inline: 10px; border: 1px solid var(--line); border-block-end: 4px solid var(--c); border-radius: 10px; background: transparent; font-size: 22px; font-variant-numeric: tabular-nums; text-align: start; }
+.fields input::-webkit-outer-spin-button, .fields input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.fields input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.verdict { min-height: 96px; margin-block-start: 16px; font-size: 22px; }
+.verdict b { font-family: var(--display); font-weight: 400; font-size: 44px; color: var(--accent); display: block; line-height: 1.15; }
+
+/* Sources drawer: enters from the left, the inline end in RTL */
+#sources {
+  position: absolute; inset-block: 0; inset-inline-end: 0; inline-size: 720px; z-index: 10;
+  padding: 40px 40px 32px; overflow: auto; background: var(--panel); color: var(--ink);
+  border-inline-start: 1px solid var(--line); box-shadow: 0 0 60px rgba(0, 0, 0, .3);
+  transform: translateX(-105%); visibility: hidden; transition: transform .3s ease, visibility 0s linear .3s;
+}
+#sources.open { transform: none; visibility: visible; transition-delay: 0s; }
+#sources header { display: flex; justify-content: space-between; align-items: center; margin-block-end: 18px; }
+#sources h2 { font-size: 40px; }
+#sources h3 { font-size: 24px; margin-block: 20px 8px; }
+#sources ol { padding-inline-start: 26px; font-size: 18px; line-height: 1.4; }
+#sources li { margin-block-end: 6px; }
+#sources a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1. Title -->
+  <section class="slide active" id="s1" aria-label="פתיחה">
+    <div class="hero">
+      <div>
+        <p class="kicker">אפייה, במספרים</p>
+        <h1>אותם חמישה מרכיבים</h1>
+        <p class="lede">לחם, עוגה, עוגייה ופאי נבנים מאותם חומרים. מה שמבדיל ביניהם הוא היחס.</p>
+        <button class="btn primary" data-go="next">נתחיל <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+        <small>מטלה 01 · בינה מלאכותית יוצרת · אוניברסיטת בר־אילן · קבוצה <bdi dir="ltr">biu-noa7</bdi></small>
+      </div>
+      <div class="family-bars" id="family-bars" role="img" aria-label="ארבע משפחות מאפים, כל אחת כפס של חמשת המרכיבים ביחס שונה"></div>
+    </div>
+  </section>
+
+  <!-- 2. Five ingredients -->
+  <section class="slide" id="s2" aria-label="חמישה מרכיבים">
+    <header class="head">
+      <p class="kicker">השחקנים</p>
+      <h2>חמישה מרכיבים, חמישה תפקידים</h2>
+    </header>
+    <div class="body-stack fill two-rows">
+      <div class="ingredients" id="ingredients"></div>
+      <p class="note">מלח, שמרים ואבקת אפייה חשובים, אבל הם מחוץ למודל שלנו. בשקף 9 נראה כמה זה עולה לנו.</p>
+    </div>
+  </section>
+
+  <!-- 3. Baker's percentage -->
+  <section class="slide" id="s3" aria-label="אחוז האופה">
+    <header class="head">
+      <p class="kicker">השפה המשותפת</p>
+      <h2>אחוז האופה: סרגל אחד לכל מתכון</h2>
+    </header>
+    <div class="two">
+      <div class="body-stack" style="align-content: center;">
+        <p class="lede">כל מרכיב נמדד ביחס למשקל הקמח, והקמח תמיד 100%. כך אפשר להשוות בין מתכונים בלי קשר לגודל התבנית.</p>
+        <p class="formula"><b>אחוז האופה</b> = משקל המרכיב ÷ משקל הקמח × 100</p>
+        <p class="note">אחוז המים נקרא הידרציה (<bdi dir="ltr" lang="en">Hydration</bdi>). הסכום עובר את 100%, וזה תקין: הקמח הוא הבסיס, לא השלם.</p>
+      </div>
+      <div class="panel body-stack" style="align-content: space-between;">
+        <div class="seg" id="batch" role="group" aria-label="גודל המתכון">
+          <button aria-pressed="true" data-times="1">כיכר אחת</button>
+          <button aria-pressed="false" data-times="2">2 כיכרות</button>
+          <button aria-pressed="false" data-times="10">10 כיכרות</button>
+        </div>
+        <table class="grid">
+          <thead><tr><th scope="col">מרכיב</th><th scope="col">משקל</th><th scope="col">אחוז האופה</th></tr></thead>
+          <tbody id="batch-rows"></tbody>
+        </table>
+        <p class="lede">הגרמים משתנים. האחוזים לא.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Bread -->
+  <section class="slide" id="s4" aria-label="לחם">
+    <header class="head">
+      <p class="kicker">משפחה ראשונה</p>
+      <h2>לחם: הכול על המים</h2>
+    </header>
+    <div class="body-stack fill">
+      <div class="ratio-row"><div class="ratio" data-ratio="5 flour, 3 liquid"></div><div class="stack" data-bar="5 flour, 3 liquid" role="img" aria-label="חמישה חלקי קמח ושלושה חלקי מים"></div></div>
+      <div class="steps" data-steps>
+        <article class="step"><span class="num">1</span><h3>לישה</h3><p>מים ולישה הופכים את חלבוני הקמח לרשת גלוטן גמישה.</p></article>
+        <article class="step"><span class="num">2</span><h3>תפיחה</h3><p>השמרים מפיקים פחמן דו־חמצני, והרשת לוכדת את הבועות.</p></article>
+        <article class="step"><span class="num">3</span><h3>קפיצת תנור</h3><p>החום מנפח את הגז, והכיכר מזנקת ברגעים הראשונים של האפייה.</p></article>
+      </div>
+      <div class="foot-row">
+        <button class="btn" data-next-step>הצעד הבא</button>
+        <p class="note">יחס מים לקמח נקרא הידרציה: כאן <bdi dir="ltr">60%</bdi>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Cake -->
+  <section class="slide" id="s5" aria-label="עוגה">
+    <header class="head">
+      <p class="kicker">משפחה שנייה</p>
+      <h2>עוגה: מכל דבר אותה כמות</h2>
+    </header>
+    <div class="body-stack fill">
+      <div class="ratio-row"><div class="ratio" data-ratio="1 flour, 1 fat, 1 sugar, 1 egg"></div><div class="stack" data-bar="1 flour, 1 fat, 1 sugar, 1 egg" role="img" aria-label="ארבעה חלקים שווים של קמח, שומן, סוכר וביצה"></div></div>
+      <div class="steps" data-steps>
+        <article class="step"><span class="num">1</span><h3>הקצפה</h3><p>הקצפת חמאה וסוכר מכניסה לתערובת בועות אוויר, והיא נעשית קלה.</p></article>
+        <article class="step"><span class="num">2</span><h3>חיבור</h3><p>חלמון הביצה מכיל לציטין, מתחלב שמחבר בין שומן למים.</p></article>
+        <article class="step"><span class="num">3</span><h3>פירור רך</h3><p>השומן מונע מסיבי גלוטן ארוכים להיווצר, ולכן העוגה נשארת רכה.</p></article>
+      </div>
+      <div class="foot-row">
+        <button class="btn" data-next-step>הצעד הבא</button>
+        <p class="note">עוגת פאונד קרויה על שם פאונד אחד מכל מרכיב.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Cookie and pie -->
+  <section class="slide" id="s6" aria-label="עוגייה ופאי">
+    <header class="head">
+      <p class="kicker">משפחות שלישית ורביעית</p>
+      <h2>עוגייה ופאי: מרכיב אחד מפריד ביניהם</h2>
+    </header>
+    <div class="two twin">
+      <div class="body-stack" style="align-content: center; gap: 36px;">
+        <div class="seg" id="twin" role="group" aria-label="בחירת מאפה">
+          <button aria-pressed="true" data-twin="cookie">עוגייה</button>
+          <button aria-pressed="false" data-twin="pie">פאי</button>
+        </div>
+        <div class="ratio" id="twin-ratio"></div>
+      </div>
+      <div class="panel body-stack" style="align-content: space-between;">
+        <h3 id="twin-title"></h3>
+        <p class="twin-why" id="twin-why"></p>
+        <div class="stack" id="twin-stack" role="img" aria-label="שלושה חלקי קמח, שני חלקי שומן וחלק אחד שמתחלף"></div>
+        <p class="note">שני המאפים הם שלושה חלקי קמח ושני חלקי שומן. רק החלק השלישי מתחלף.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. The oven -->
+  <section class="slide" id="s7" aria-label="בתוך התנור">
+    <header class="head">
+      <p class="kicker">תלת־ממד</p>
+      <h2>בתוך התנור: חמש שניות</h2>
+    </header>
+    <div class="oven">
+      <div class="oven-side">
+        <div class="seg" id="bake-family" role="group" aria-label="מה אופים">
+          <button aria-pressed="true" data-family="bread">לחם</button>
+          <button aria-pressed="false" data-family="cake">עוגה</button>
+          <button aria-pressed="false" data-family="cookie">עוגייה</button>
+          <button aria-pressed="false" data-family="pie">פאי</button>
+        </div>
+        <ol class="timeline" id="bake-timeline">
+          <li><b>תפיחה</b>הגז בתוך המאפה מתרחב והוא גדל.</li>
+          <li><b>השחמה</b>בסביבות <bdi dir="ltr">140–165°C</bdi> תגובת מיאר (<bdi dir="ltr" lang="en">Maillard</bdi>) רצה מהר: חומצות אמינו וסוכרים יוצרים צבע וטעם.</li>
+          <li><b>מוכן</b>עכשיו אפשר להסתובב סביבו.</li>
+        </ol>
+        <div><button class="btn primary" id="bake-replay">אפייה מחדש</button></div>
+        <p class="note">הדמיה להמחשה, לא סימולציה פיזיקלית.</p>
+      </div>
+      <div class="viewport" data-viewport="oven"><span class="hint">גררו כדי לסובב</span></div>
+    </div>
+  </section>
+
+  <!-- 8. Python lab -->
+  <section class="slide lab" id="s8" aria-label="מעבדת פייתון">
+    <header class="head split">
+      <div>
+        <p class="kicker">מעבדה</p>
+        <h2><bdi dir="ltr">Python</bdi> מזהה מתכון לפי היחס שלו</h2>
+      </div>
+      <span class="chip" id="py-status" data-state="loading" role="status"></span>
+    </header>
+    <div class="lab-grid">
+      <div class="panel">
+        <div class="presets" id="presets"></div>
+        <div id="sliders"></div>
+        <div class="lab-actions">
+          <button class="btn" id="lab-double">הכפילו את המתכון</button>
+          <button class="btn" id="lab-reset">איפוס</button>
+        </div>
+      </div>
+      <div class="panel answer">
+        <p>הכי קרוב ל:</p>
+        <h3 id="lab-closest"></h3>
+        <p id="lab-gap"></p>
+        <div class="ranks" id="lab-ranks"></div>
+        <p class="explain">מתכון הוא וקטור של חמישה מספרים. דמיון קוסינוס מודד את הזווית בינו לבין כל משפחה, ולכן הכפלת המתכון לא משנה את התשובה. הקמח שולט בכל וקטור, אז ציון גבוה לא אומר &quot;בטוח&quot;: מה שקובע הוא הפער.</p>
+      </div>
+      <div class="lab-view">
+        <div class="viewport" data-viewport="lab"><span class="hint">הצורה נקבעת לפי תשובת <bdi dir="ltr">Python</bdi></span></div>
+        <pre class="code ltr-block" id="lab-code" hidden></pre>
+        <button class="btn" id="lab-code-toggle" aria-pressed="false">הצגת הקוד</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Where it breaks -->
+  <section class="slide" id="s9" aria-label="איפה המודל טועה">
+    <header class="head split">
+      <div>
+        <p class="kicker">עין ביקורתית</p>
+        <h2>איפה המודל טועה</h2>
+      </div>
+      <span class="score" id="score"></span>
+    </header>
+    <div class="body-stack fill two-rows-end">
+      <div class="misses" id="misses"></div>
+      <p class="lede">וקטור רואה כמויות. הוא לא רואה שמרים, לישה או חום, ושם קורה חלק מהקסם.</p>
+      <p class="note">המדגם קטן, והתיוג שלנו. רשימת המתכונים נקבעה לפני שחישבנו את התוצאה.</p>
+    </div>
+  </section>
+
+  <!-- 10. Closing -->
+  <section class="slide" id="s10" aria-label="סיום">
+    <div class="close">
+      <div>
+        <p class="kicker">לקחת הביתה</p>
+        <h2>אל תשמרו מתכון. תשמרו יחס.</h2>
+        <p class="lede">כל מתכון הוא נקודה במרחב של חמישה מרכיבים. עכשיו אתם יודעים לקרוא את המפה.</p>
+      </div>
+      <form class="panel" id="yours" autocomplete="off">
+        <h3>עכשיו תורכם</h3>
+        <p class="note">הקלידו מתכון אמיתי בגרמים, ו־<bdi dir="ltr">Python</bdi> יגיד מה יצא לכם.</p>
+        <div class="fields" id="yours-fields"></div>
+        <button class="btn primary" type="submit">מה יצא לי?</button>
+        <div class="verdict" id="yours-verdict" role="status"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Bottom bar -->
+  <nav id="bar" aria-label="ניווט במצגת">
+    <button class="btn" id="prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg> הקודם</button>
+    <div id="strip"></div>
+    <span id="counter" aria-live="polite"></span>
+    <button class="btn" id="open-sources">מקורות</button>
+    <button class="btn primary" id="next">הבא <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+  </nav>
+
+  <!-- Sources -->
+  <aside id="sources" aria-label="מקורות" aria-hidden="true">
+    <header><h2>מקורות</h2><button class="btn" id="close-sources">סגירה</button></header>
+    <h3>יחסים וידע</h3>
+    <ol id="facts"></ol>
+    <h3>12 המתכונים שנבדקו</h3>
+    <ol id="recipe-sources"></ol>
+  </aside>
+</div>
+
+<!-- Generated by python/inline_python.py. Don't edit these two blocks by hand. -->
+<script type="text/x-python" id="py-source">
+"""Classify a recipe by the ratio of its ingredients.
+
+A recipe becomes a five-dimensional vector of baker's percentages, and cosine
+similarity finds the closest of four reference families.
+
+This exact file also runs inside the presentation, through Pyodide. It uses the
+standard library only, so the browser has no extra packages to download.
+"""
+
+import json
+import math
+
+INGREDIENTS = ("flour", "liquid", "fat", "sugar", "egg")
+
+# How sharply the 3D blend favors the winning family. Scores sit close together
+# because flour dominates every vector, so a plain share of the scores would
+# blend all four shapes into a shapeless lump.
+BLEND_SHARPNESS = 24
+
+
+def _ratio(**parts):
+    """Turn published parts, such as flour=5, liquid=3, into a percentage vector."""
+    return tuple(100 * parts.get(name, 0) / parts["flour"] for name in INGREDIENTS)
+
+
+# Published ratios, from Michael Ruhlman, "Ratio" (2009).
+FAMILIES = {
+    "bread": _ratio(flour=5, liquid=3),
+    "cake": _ratio(flour=1, fat=1, sugar=1, egg=1),
+    "cookie": _ratio(flour=3, fat=2, sugar=1),
+    "pie": _ratio(flour=3, fat=2, liquid=1),
+}
+
+
+def bakers_percentages(grams):
+    """Express every ingredient as a percentage of the flour's weight."""
+    values = [float(grams.get(name, 0)) for name in INGREDIENTS]
+    if any(value < 0 for value in values):
+        raise ValueError("negative_amount")
+    flour = values[0]
+    if flour <= 0:
+        raise ValueError("no_flour")
+    return {name: 100 * value / flour for name, value in zip(INGREDIENTS, values)}
+
+
+def cosine(a, b):
+    """Cosine of the angle between two vectors: 1.0 means the same direction."""
+    dot = sum(x * y for x, y in zip(a, b))
+    return dot / (math.hypot(*a) * math.hypot(*b))
+
+
+def classify(grams):
+    """Rank the four families for a recipe given in grams."""
+    percentages = bakers_percentages(grams)
+    vector = tuple(percentages[name] for name in INGREDIENTS)
+    scores = {name: cosine(vector, ref) for name, ref in FAMILIES.items()}
+    ranking = sorted(scores, key=scores.get, reverse=True)
+
+    weights = {name: math.exp(BLEND_SHARPNESS * score) for name, score in scores.items()}
+    total = sum(weights.values())
+
+    return {
+        "percentages": percentages,
+        "scores": scores,
+        "ranking": ranking,
+        "closest": ranking[0],
+        "runner_up": ranking[1],
+        "gap": scores[ranking[0]] - scores[ranking[1]],
+        "blend": {name: weight / total for name, weight in weights.items()},
+    }
+
+
+def classify_json(payload):
+    """Entry point for the page: JSON text in, JSON text out."""
+    try:
+        return json.dumps(classify(json.loads(payload)))
+    except ValueError as problem:
+        return json.dumps({"error": str(problem)})
+</script>
+<script type="application/json" id="py-data">
+{"ingredients":["flour","liquid","fat","sugar","egg"],"families":{"bread":{"flour":100.0,"liquid":60.0,"fat":0.0,"sugar":0.0,"egg":0.0},"cake":{"flour":100.0,"liquid":0.0,"fat":100.0,"sugar":100.0,"egg":100.0},"cookie":{"flour":100.0,"liquid":0.0,"fat":66.66666666666667,"sugar":33.333333333333336,"egg":0.0},"pie":{"flour":100.0,"liquid":33.333333333333336,"fat":66.66666666666667,"sugar":0.0,"egg":0.0}},"recipes":[{"id":"baguette","name_he":"באגט","family":"bread","grams":{"flour":100,"liquid":66},"source":"The Fresh Loaf forum: typical French baguette, about 66% hydration","url":"https://www.thefreshloaf.com/comment/231231","converted":"Forum figure for a typical dough, not a single published recipe.","result":{"percentages":{"flour":100.0,"liquid":66.0,"fat":0.0,"sugar":0.0,"egg":0.0},"scores":{"bread":0.9990776399563143,"cake":0.4173047032808626,"cookie":0.6691762395284345,"pie":0.8163950122246901},"ranking":["bread","pie","cookie","cake"],"closest":"bread","runner_up":"pie","gap":0.18268262773162414,"blend":{"bread":0.9873269615464627,"cake":8.523193924596616e-07,"cookie":0.00035964697356045234,"pie":0.012312539160584399}}},{"id":"challah","name_he":"חלה","family":"bread","grams":{"flour":100,"liquid":43,"fat":6,"sugar":11,"egg":16},"source":"Ginsberg and Berg, Inside the Jewish Bakery: Challah","url":"https://cdn.shopify.com/s/files/1/0874/5798/files/Website_excerpt_challah.pdf","result":{"percentages":{"flour":100.0,"liquid":43.0,"fat":6.0,"sugar":11.0,"egg":16.0},"scores":{"bread":0.9741605338538817,"cake":0.6005386860341181,"cookie":0.779574901651679,"pie":0.8568083284406999},"ranking":["bread","pie","cookie","cake"],"closest":"bread","runner_up":"pie","gap":0.11735220541318181,"blend":{"bread":0.9351763291377417,"cake":0.00011929101717052927,"cookie":0.008764241050433476,"pie":0.055940138794654204}}},{"id":"brioche","name_he":"בריוש","family":"bread","grams":{"flour":100,"liquid":9,"fat":50,"sugar":12,"egg":50},"source":"King Arthur Baking, Brioche professional formula","url":"https://www.kingarthurbaking.com/pro/formulas/brioche","result":{"percentages":{"flour":100.0,"liquid":9.0,"fat":50.0,"sugar":12.0,"egg":50.0},"scores":{"bread":0.7324744933548438,"cake":0.8590673523814941,"cookie":0.8923896970128806,"pie":0.8858917137822043},"ranking":["cookie","pie","cake","bread"],"closest":"cookie","runner_up":"pie","gap":0.006497983230676296,"blend":{"bread":0.009257079975506498,"cake":0.1931790111911783,"cookie":0.42981442651992496,"pie":0.3677494823133901}}},{"id":"yellow_cake","name_he":"עוגת חמאה","family":"cake","grams":{"flour":850,"liquid":850,"fat":680,"sugar":740,"egg":425},"source":"Kreol Magazine, Yellow Butter Cake","url":"https://kreolmagazine.com/recipes-yellow-butter-cake/","result":{"percentages":{"flour":100.0,"liquid":100.0,"fat":80.0,"sugar":87.05882352941177,"egg":50.0},"scores":{"bread":0.7183360215047836,"cake":0.8300169564367298,"cookie":0.7655034033567922,"pie":0.7836120860168454},"ranking":["cake","pie","cookie","bread"],"closest":"cake","runner_up":"pie","gap":0.04640487041988439,"blend":{"bread":0.04258499137943157,"cake":0.6213187992430895,"cookie":0.13209469352817202,"pie":0.20400151584930695}}},{"id":"joy_yellow_cake","name_he":"עוגה צהובה","family":"cake","grams":{"flour":300,"liquid":240,"fat":170,"sugar":265,"egg":110},"source":"Joy of Baking, Yellow Butter Cake","url":"https://www.joyofbaking.com/printpages/YellowCakeprint.html","converted":"240 ml milk counted as 240 g. Egg is yolks.","result":{"percentages":{"flour":100.0,"liquid":80.0,"fat":56.666666666666664,"sugar":88.33333333333333,"egg":36.666666666666664},"scores":{"bread":0.7483597213152832,"cake":0.8304693371846209,"cookie":0.7906228662043914,"pie":0.7774895960016607},"ranking":["cake","cookie","pie","bread"],"closest":"cake","runner_up":"cookie","gap":0.03984647098022953,"blend":{"bread":0.07725198275935705,"cake":0.554298507091746,"cookie":0.21302042637270402,"pie":0.15542908377619288}}},{"id":"genoise","name_he":"גנואז","family":"cake","grams":{"flour":125,"fat":60,"sugar":125,"egg":200},"source":"River Cottage, Genoese Sponge Cake","url":"https://rivercottage.net/recipes/genoese-sponge-cake/","converted":"4 medium eggs counted as 200 g.","result":{"percentages":{"flour":100.0,"liquid":0.0,"fat":48.0,"sugar":100.0,"egg":160.0},"scores":{"bread":0.39178216017561046,"cake":0.9320608751309647,"cookie":0.6056640123756835,"pie":0.4835543324612312},"ranking":["cake","cookie","pie","bread"],"closest":"cake","runner_up":"cookie","gap":0.32639686275528124,"blend":{"bread":2.335910567608107e-06,"cake":0.9995804688108315,"cookie":0.0003960602050370642,"pie":2.1135073563769744e-05}}},{"id":"toll_house","name_he":"שוקולד צ׳יפס","family":"cookie","grams":{"flour":280,"fat":227,"sugar":315,"egg":100},"source":"Original Nestlé Toll House recipe, via Cooking for Engineers","url":"https://CookingForEngineers.com/recipe/185/Nestle-Toll-House-Chocolate-Chip-Cookies","converted":"2 1/4 cups flour as 280 g (the source's sifted figure), 1 cup butter as 227 g, 3/4 cup granulated as 150 g plus 3/4 cup brown as 165 g, 2 eggs as 100 g.","result":{"percentages":{"flour":100.0,"liquid":0.0,"fat":81.07142857142857,"sugar":112.5,"egg":35.714285714285715},"scores":{"bread":0.4909641175810345,"cake":0.9426752413845676,"cookie":0.8793326554742888,"pie":0.7071823842036853},"ranking":["cake","cookie","pie","bread"],"closest":"cake","runner_up":"cookie","gap":0.06334258591027875,"blend":{"bread":1.6019327903987712e-05,"cake":0.8182007151142111,"cookie":0.17891048870327173,"pie":0.0028727768546131863}}},{"id":"shortbread","name_he":"שורטברד","family":"cookie","grams":{"flour":180,"fat":125,"sugar":55},"source":"BBC Food shortbread, as reproduced by Age UK","url":"https://www.ageuk.org.uk/bp-assets/globalassets/northumberland/winter-warmers---shortbread.pdf","result":{"percentages":{"flour":100.0,"liquid":0.0,"fat":69.44444444444444,"sugar":30.555555555555557,"egg":0.0},"scores":{"bread":0.6831328623161047,"cake":0.7966629715906369,"cookie":0.9995276623397105,"pie":0.9344696488146406},"ranking":["cookie","pie","cake","bread"],"closest":"cookie","runner_up":"pie","gap":0.0650580135250699,"blend":{"bread":0.00041355902779806054,"cake":0.006307677861247455,"cookie":0.8209975928605839,"pie":0.17228117025037046}}},{"id":"sugar_cookie","name_he":"עוגיות סוכר","family":"cookie","grams":{"flour":250,"fat":170,"sugar":200,"egg":50},"source":"Essential Crunchy Sugar Cookies (King Arthur Flour), third-party copy","url":"https://www.snapcalorie.com/recipes/the_essential_crunchy_sugar_cookies_king_arthur_flour.html","converted":"1 large egg counted as 50 g.","result":{"percentages":{"flour":100.0,"liquid":0.0,"fat":68.0,"sugar":80.0,"egg":20.0},"scores":{"bread":0.585841679241269,"cake":0.9154919261065296,"cookie":0.9421833038218413,"pie":0.7961083729967496},"ranking":["cookie","cake","pie","bread"],"closest":"cookie","runner_up":"cake","gap":0.026691377715311715,"blend":{"bread":0.000124017785166924,"cake":0.3384159058971942,"cookie":0.6421800364841029,"pie":0.01928003983353584}}},{"id":"pate_brisee","name_he":"פאט בריזה","family":"pie","grams":{"flour":250,"liquid":80,"fat":125},"source":"Magimix, Shortcrust Pastry (Pâte Brisée)","url":"https://magimix.com.au/recipes/shortcrust-pastry-pate-brisee","converted":"80 ml water counted as 80 g.","result":{"percentages":{"flour":100.0,"liquid":32.0,"fat":50.0,"sugar":0.0,"egg":0.0},"scores":{"bread":0.8789298622377483,"cake":0.6449242129594779,"cookie":0.9192706458396955,"pie":0.9928122975068712},"ranking":["pie","cookie","bread","cake"],"closest":"pie","runner_up":"cookie","gap":0.07354165166717563,"blend":{"bread":0.05258043033145966,"cake":0.00019132311492123068,"cookie":0.1384518774523762,"pie":0.808776369101243}}},{"id":"pate_sucree","name_he":"פאט סוקרה","family":"pie","grams":{"flour":200,"fat":100,"sugar":100,"egg":50},"source":"The Pastry Maestra, Pâte Sucrée","url":"https://pastrymaestra.com/wp-content/uploads/2019/05/Pate-Sucree-Recipe-EN-Pastry-Maestra.pdf","result":{"percentages":{"flour":100.0,"liquid":0.0,"fat":50.0,"sugar":50.0,"egg":25.0},"scores":{"bread":0.6859943405700354,"cake":0.9,"cookie":0.9621404708847279,"pie":0.855235974119758},"ranking":["cookie","cake","pie","bread"],"closest":"cookie","runner_up":"cake","gap":0.06214047088472785,"blend":{"bread":0.0010155044225457455,"cake":0.17269400710967184,"cookie":0.7673112989136124,"pie":0.05897918955417005}}},{"id":"all_butter_crust","name_he":"בצק פאי חמאה","family":"pie","grams":{"flour":300,"liquid":119,"fat":227},"source":"King Arthur Baking, Easy as Pie class handout (July 2025)","url":"https://shop.kingarthurbaking.com/content/class-pdfs/EasyAsPie_July2025.pdf","result":{"percentages":{"flour":100.0,"liquid":39.666666666666664,"fat":75.66666666666667,"sugar":0.0,"egg":0.0},"scores":{"bread":0.8071273909001057,"cake":0.6678059131361662,"cookie":0.917116035853771,"pie":0.9977192915898114},"ranking":["pie","cookie","bread","cake"],"closest":"pie","runner_up":"cookie","gap":0.08060325573604044,"blend":{"bread":0.008928915586720047,"cake":0.00031524016134585074,"cookie":0.12508861817819805,"pie":0.865667226073736}}}],"score":{"correct":9,"total":12}}
+</script>
+
+<script>
+/* Deck: navigation and the static interactions. Kept separate from the 3D and
+   Python layers so that the slides still work if a CDN is unreachable. */
+const DATA = JSON.parse(document.getElementById('py-data').textContent);
+const $ = (s, root = document) => root.querySelector(s);
+const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+
+const INGREDIENT_HE = { flour: 'קמח', liquid: 'נוזל', fat: 'שומן', sugar: 'סוכר', egg: 'ביצה' };
+const FAMILY_HE = { bread: 'לחם', cake: 'עוגה', cookie: 'עוגייה', pie: 'פאי' };
+// One step of browning per slide, for the progress strip
+const TONES = ['#F2DFB6', '#EFD49C', '#EBC883', '#E5B96A', '#DBA552', '#CC8E3F', '#B57430', '#965A24', '#75431A', '#553012'];
+
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const ltr = text => `<bdi dir="ltr">${text}</bdi>`;
+
+function stack(el, parts) {
+  el.innerHTML = parts.map(([name, value]) =>
+    `<i class="c-${name}" style="flex-grow:${value}"></i>`).join('');
+}
+
+/* Navigation. In RTL the next slide is to the left, so ArrowLeft advances. */
+const slides = $$('.slide');
+const enterHooks = [];
+let current = 0;
+
+function go(index) {
+  const next = Math.max(0, Math.min(slides.length - 1, index));
+  slides.forEach((slide, i) => {
+    slide.classList.toggle('active', i === next);
+    slide.toggleAttribute('inert', i !== next);
+  });
+  current = next;
+  document.documentElement.dataset.slide = next + 1;
+  $('#counter').textContent = `שקף ${next + 1} מתוך ${slides.length}`;
+  $('#prev').disabled = next === 0;
+  $('#next').disabled = next === slides.length - 1;
+  $$('#strip button').forEach((b, i) => {
+    b.classList.toggle('done', i <= next);
+    b.setAttribute('aria-current', i === next ? 'true' : 'false');
+  });
+  history.replaceState(null, '', `#${next + 1}`);
+  enterHooks.forEach(hook => hook(next + 1));
+}
+
+$('#strip').innerHTML = slides.map((s, i) =>
+  `<button style="--tone:${TONES[i]}" aria-label="שקף ${i + 1}: ${s.getAttribute('aria-label')}" data-to="${i}"></button>`).join('');
+$('#strip').addEventListener('click', e => { if (e.target.dataset.to) go(+e.target.dataset.to); });
+$('#next').addEventListener('click', () => go(current + 1));
+$('#prev').addEventListener('click', () => go(current - 1));
+$$('[data-go="next"]').forEach(b => b.addEventListener('click', () => go(current + 1)));
+
+addEventListener('keydown', e => {
+  if (e.target.matches('input, textarea, select')) return;
+  if ($('#sources').classList.contains('open')) { if (e.key === 'Escape') toggleSources(false); return; }
+  const step = { ArrowLeft: 1, PageDown: 1, ' ': 1, ArrowRight: -1, PageUp: -1 }[e.key];
+  if (step) {
+    if (e.key === ' ' && e.target.matches('button, a')) return;
+    e.preventDefault(); go(current + step);
+  }
+  if (e.key === 'Home') go(0);
+  if (e.key === 'End') go(slides.length - 1);
+});
+
+function fit() {
+  $('#stage').style.setProperty('--scale', Math.min(innerWidth / 1600, innerHeight / 900));
+}
+addEventListener('resize', fit);
+fit();
+
+/* Slide 1: the whole argument in one picture */
+$('#family-bars').innerHTML = Object.keys(DATA.families).map(f =>
+  `<div class="row"><span>${FAMILY_HE[f]}</span><div class="stack" data-family="${f}"></div></div>`).join('') +
+  `<div class="legend">${DATA.ingredients.map(i =>
+    `<span class="c-${i}"><i></i>${INGREDIENT_HE[i]}</span>`).join('')}</div>`;
+$$('#family-bars .stack').forEach(el =>
+  stack(el, Object.entries(DATA.families[el.dataset.family])));
+
+/* Slide 2 */
+const ICONS = {
+  flour: '<path d="M32 58V20"/><path d="M32 30c-6-1-11-5-12-12 6 1 11 5 12 12zM32 30c6-1 11-5 12-12-6 1-11 5-12 12zM32 42c-6-1-11-5-12-12 6 1 11 5 12 12zM32 42c6-1 11-5 12-12-6 1-11 5-12 12zM32 20c-3-3-3-9 0-14 3 5 3 11 0 14z"/>',
+  liquid: '<path d="M32 6c9 13 18 22 18 33a18 18 0 0 1-36 0C14 28 23 19 32 6z"/>',
+  fat: '<path d="M8 28l16-12h32v20L40 48H8z"/><path d="M8 28h32v20M40 28l16-12"/>',
+  sugar: '<path d="M32 8l22 12v24L32 56 10 44V20z"/><path d="M10 20l22 12 22-12M32 32v24"/>',
+  egg: '<path d="M32 6c12 0 20 19 20 31a20 20 0 0 1-40 0C12 25 20 6 32 6z"/><circle cx="32" cy="38" r="8"/>',
+};
+const ROLES = {
+  flour: ['המבנה', 'חלבוני הקמח יוצרים גלוטן, רשת גמישה שנותנת לבצק שלד.'],
+  liquid: ['המפעיל', 'גלוטן נוצר רק כשמוסיפים מים. נוזל הוא מה שמעיר את הקמח.'],
+  fat: ['המרכך', `השומן מונע מסיבי גלוטן ארוכים להיווצר. לכן בצק כזה נקרא קצר (${ltr('short')}).`],
+  sugar: ['הטעם והצבע', 'הוא לא רק ממתיק: סוכרים משתתפים בתגובה שמשחימה את המאפה.'],
+  egg: ['המחבר', 'החלמון מכיל לציטין, מתחלב שעוזר לשומן ולמים להישאר יחד.'],
+};
+$('#ingredients').innerHTML = DATA.ingredients.map(i => `
+  <button class="ing c-${i}" aria-expanded="false" type="button">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${ICONS[i]}</svg>
+    <h3>${INGREDIENT_HE[i]}</h3>
+    <span class="role">${ROLES[i][0]}</span>
+    <span class="more">${ROLES[i][1]}</span>
+    <span class="cue">לחצו לגילוי</span>
+  </button>`).join('');
+$$('.ing').forEach(card => card.addEventListener('click', () =>
+  card.setAttribute('aria-expanded', card.getAttribute('aria-expanded') !== 'true')));
+
+/* Slide 3: grams change, percentages don't */
+function renderBatch(times) {
+  const rows = [['קמח', 500, 100], ['מים', 300, 60]];
+  $('#batch-rows').innerHTML = rows.map(([name, grams, pct]) =>
+    `<tr><td>${name}</td><td class="flash">${ltr(fmt(grams * times))} ג׳</td><td class="strong">${ltr(pct + '%')}</td></tr>`).join('');
+}
+function pressGroup(group, button) {
+  $$('button', group).forEach(b => b.setAttribute('aria-pressed', b === button));
+}
+$('#batch').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  pressGroup($('#batch'), b); renderBatch(+b.dataset.times);
+});
+renderBatch(1);
+
+/* Slides 4 and 5: ratio chips and step-by-step reveal */
+function ratioChips(el, parts) {
+  el.innerHTML = parts.map(([count, name, label]) =>
+    `<div class="c-${name}"><b>${count}</b><span>${label || INGREDIENT_HE[name]}</span></div>`).join('');
+}
+const parseParts = text => text.split(', ').map(p => p.split(' '));
+$$('[data-ratio]').forEach(el => ratioChips(el, parseParts(el.dataset.ratio)));
+$$('[data-bar]').forEach(el => stack(el, parseParts(el.dataset.bar).map(([n, name]) => [name, +n])));
+$$('.slide').forEach(slide => {
+  const steps = $$('.step', slide), button = $('[data-next-step]', slide);
+  if (!button) return;
+  let shown = 1;
+  const paint = () => {
+    steps.forEach((s, i) => s.classList.toggle('dim', i >= shown));
+    button.disabled = shown >= steps.length;
+  };
+  button.addEventListener('click', () => { shown++; paint(); });
+  paint();
+});
+
+/* Slide 6: the twins differ in one ingredient */
+const TWINS = {
+  cookie: {
+    title: 'עוגייה: החלק השלישי הוא סוכר',
+    why: 'אין כאן מים, אז כמעט לא נבנה גלוטן. הבצק נשאר קצר, מתוק ופריך.',
+    parts: [['3', 'flour'], ['2', 'fat'], ['1', 'sugar']],
+  },
+  pie: {
+    title: 'פאי: החלק השלישי הוא מים',
+    why: 'מעט המים מחברים את הבצק. שומרים אותו קר, ובאפייה משתחררים אדים שיוצרים כיסים וקרום עלים.',
+    parts: [['3', 'flour'], ['2', 'fat'], ['1', 'liquid', 'מים']],
+  },
+};
+function renderTwin(kind) {
+  const t = TWINS[kind];
+  $('#twin-title').textContent = t.title;
+  $('#twin-why').textContent = t.why;
+  ratioChips($('#twin-ratio'), t.parts);
+  stack($('#twin-stack'), t.parts.map(([count, name]) => [name, +count]));
+}
+$('#twin').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  pressGroup($('#twin'), b); renderTwin(b.dataset.twin);
+});
+renderTwin('cookie');
+
+/* Slide 9: every number here is computed by the Python file at build time */
+const byId = Object.fromEntries(DATA.recipes.map(r => [r.id, r]));
+$('#score').innerHTML = `${DATA.score.correct} מתוך ${DATA.score.total} נכונים`;
+const WHY = {
+  brioche: g => `הפסד בפער של ${ltr(g)} בלבד. הווקטור לא רואה שמרים, בדיוק מה שהופך את הבריוש ללחם.`,
+  toll_house: () => 'במתכון המקורי יש יותר סוכר מקמח, ומספרית הוא באמת קרוב לעוגה. היחס לבדו לא מספר איך מעבדים את הבצק.',
+  pate_sucree: () => 'כאן המודל כנראה צודק: בלי מים, עם סוכר וביצה, זה בעצם בצק עוגיות בתוך תבנית.',
+};
+$('#misses').innerHTML = Object.keys(WHY).map(id => {
+  const r = byId[id], gap = r.result.gap.toFixed(3);
+  return `<article class="miss"><h3>${r.name_he}</h3>
+    <dl><dt>התיוג שלנו</dt><dd>${FAMILY_HE[r.family]}</dd><dt>המודל אמר</dt><dd>${FAMILY_HE[r.result.closest]}</dd></dl>
+    <p>${WHY[id](gap)}</p></article>`;
+}).join('');
+
+/* Sources */
+const FACTS = [
+  ['Michael Ruhlman, Ratio (2009), via NPR: היחסים 5:3, 3:2:1, 1:2:3 ו־1:1:1:1', 'https://www.npr.org/2009/07/26/107019060/throw-away-the-recipe-learn-the-ratio-instead'],
+  ['Wikipedia: Baker percentage', 'https://en.wikipedia.org/wiki/Baker_percentage'],
+  ['Wikipedia: Gluten', 'https://en.wikipedia.org/wiki/Gluten'],
+  ['WSU, Dr. Universe: why bread rises in the oven', 'https://news.wsu.edu/news/2026/05/13/dr-universe-explains-why-bread-rises-in-the-oven/'],
+  ['Wikipedia: Creaming (cooking)', 'https://en.wikipedia.org/wiki/Creaming_(cooking)'],
+  ['Wikipedia: Lecithin', 'https://en.wikipedia.org/wiki/Lecithin'],
+  ['Food Network: What Is Shortening?', 'https://www.foodnetwork.com/how-to/packages/food-network-essentials/what-is-shortening'],
+  ['Wikipedia: Shortcrust pastry', 'https://en.wikipedia.org/wiki/Shortcrust_pastry'],
+  ['Wikipedia: Maillard reaction', 'https://en.wikipedia.org/wiki/Maillard_reaction'],
+  ['Wikipedia: Pound cake', 'https://en.wikipedia.org/wiki/Pound_cake'],
+];
+const sourceItem = (text, url) =>
+  `<li><a href="${url}" target="_blank" rel="noopener">${ltr(text)}</a></li>`;
+$('#facts').innerHTML = FACTS.map(([t, u]) => sourceItem(t, u)).join('');
+$('#recipe-sources').innerHTML = DATA.recipes.map(r => sourceItem(r.source, r.url)).join('');
+function toggleSources(open) {
+  const panel = $('#sources');
+  panel.classList.toggle('open', open);
+  panel.setAttribute('aria-hidden', !open);
+  (open ? $('#close-sources') : $('#open-sources')).focus({ preventScroll: true });
+}
+$('#open-sources').addEventListener('click', () => toggleSources(true));
+$('#close-sources').addEventListener('click', () => toggleSources(false));
+
+go(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+</script>
+</body>
+</html>

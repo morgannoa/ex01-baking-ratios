@@ -1,6 +1,6 @@
 # PRD: Same Five Ingredients (אותם חמישה מרכיבים)
 
-**Status:** v0.1, draft awaiting team review
+**Status:** v1.0, accepted by the team on 2026-11-07
 **Course:** Generative AI, Bar-Ilan University, Dr. Yoram Segal. Assignment 01.
 **Due:** planned for Wed 2026-11-11 (Moodle closes Thu 2026-11-12 23:59; the lecturer's text says 11/11, so we use the earlier date)
 
@@ -14,7 +14,7 @@ The audience reads a recipe as a vector, watches Python classify it, and sees th
 
 ## 2. Team brief
 
-> **Provenance:** the team supplied the topic ("baking: cakes, breads, cookies, pies") and asked the model to draft the rest. These bullets are the model's draft. The team must edit them in its own words, and those edits are the record of the team's judgment.
+> **Provenance:** the team supplied the topic ("baking: cakes, breads, cookies, pies") and asked the model to draft the rest. These bullets are the model's draft, and the team accepted them as written.
 
 1. Topic: baking, covering breads, cakes, cookies and pies.
 2. Don't make a recipe collection. Make one argument: everything comes from the same five ingredients.
@@ -45,7 +45,7 @@ The audience reads a recipe as a vector, watches Python classify it, and sees th
 | Moodle | Repo accessible, or grade 0 | Public repo | T7, incognito |
 | Moodle | Separate upload by each student | Each student uploads on their own | Team |
 | Moodle | PDF form, template unchanged, named `xxxxxxxx-ex01.pdf` | Form kept outside the repo; Word submission costs 30 points | T8 |
-| Moodle | Exactly 8-character group code | Proposed `biu-noa7` | T8 |
+| Moodle | Exactly 8-character group code | `biu-noa7` | T8 |
 | Moodle | Self grade | Chosen after T1 to T8 pass | Team |
 | Lecture 5.5 | 3D animation of at most 5 seconds | Hard cap in code | T4 |
 | Lecture 4 | Fancy, RTL, BiDi, navigation buttons, single file | All five apply | T1, T5 |
@@ -73,6 +73,9 @@ All facts carry a source in the sources panel.
 - Soft fade between slides. Honors `prefers-reduced-motion`.
 - `dir="rtl"` on the document. English terms are wrapped with `dir="ltr"` or `<bdi>` so that BiDi holds up inside Hebrew sentences.
 - Works at projector and laptop sizes. Phone is a nice-to-have.
+- Fonts from Google Fonts: Suez One for headings, Heebo for body text.
+- In RTL the next button sits on the left, the left arrow key advances, progress fills from the right, and sliders grow toward the left.
+- CSS uses logical properties only. Code samples and formulas are the one deliberate LTR exception, as isolated blocks.
 
 ## 6. Python: the recipe classifier
 
@@ -96,18 +99,13 @@ All facts carry a source in the sources panel.
 
 **Runtime:** real Python in the browser through Pyodide, loaded from a CDN. Standard library only, so no extra packages are downloaded. The same `python/recipe_vectors.py` file is the source of truth for the page and for command-line use. A browser opened from `file://` cannot fetch a local file, so a small build step inlines it into `index.html`, and a test confirms the two match.
 
-**Feasibility prototype (2026-11-07):**
+**Result on published recipes:** 9 of 12 correct, on a list in `python/sourced_recipes.py` fixed before any score was computed. An earlier prototype scored 10 of 12 on recipes recalled from memory, so the sourced figure replaced it. The deck shows only the sourced figure.
 
-| Vector | Correct on 12 test recipes |
-|---|---:|
-| With flour | 10 |
-| Without flour | 8 |
+Flour stays in the vector, because the prototype scored 10 of 12 with it and 8 of 12 without. Caveats:
 
-Decision: keep flour, based on this result. Caveats:
-
-- The sample is small, and the 12 test recipes were entered from the model's memory. Phase 4 must replace them with sourced recipes before any accuracy figure appears in the deck or README.
-- Flour dominates every vector, so scores run high (the lowest pair is 0.43, and cookie to pie is 0.93). The lab must present the ranking and the gap between first and second, not treat 0.9 as "90% sure".
-- The two misses are useful. Brioche scores close between pie and cookie, and pâte sucrée lands on cookie. These feed slide 9.
+- Twelve recipes is a small sample, and the family labels are ours.
+- Flour dominates every vector, so scores run high. The lab presents the ranking and the gap between first and second, and doesn't treat 0.9 as "90% sure".
+- The three misses feed slide 9: brioche (cookie, by a gap of 0.006), Toll House (cake), pâte sucrée (cookie).
 
 ## 7. 3D: the five-second bake
 
@@ -126,6 +124,8 @@ README.md                  what the grader reads first
 PRD.md                     this file
 prompts/                   real prompts, in order
 python/recipe_vectors.py   classifier, source of truth
+python/sourced_recipes.py  the 12 published test recipes
+python/inline_python.py    copies the classifier into index.html
 python/make_charts.py      charts for the README
 tests/                     automated checks
 assets/                    screenshots, video, charts
@@ -153,7 +153,7 @@ A 30 to 60 second screen capture of the deck running. A screen capture rather th
 | T2 | Keyboard and button navigation agree, including at both ends |
 | T3 | Python runs in the page and matches `python/recipe_vectors.py` on all presets; doubling a recipe doesn't change the result |
 | T4 | Bake animation finishes within 5.0 seconds; replay works; opens from `file://` |
-| T5 | Team reads every slide for BiDi errors, especially Hebrew sentences containing English terms and numbers |
+| T5 | Automated: every text block computes as RTL unless explicitly isolated, right edges line up, nothing overflows, no physical left or right in the CSS. Team also reads every slide for BiDi errors |
 | T6 | Every image link in the README renders on GitHub |
 | T7 | Repo and any live link open in an incognito window |
 | T8 | Form PDF has the template layout and the correct name; the group code is exactly 8 characters |
@@ -167,7 +167,6 @@ Recipe database, accounts, backend, physics simulation of baking, AI-generated v
 - Edit the bullets in section 2 in your own words.
 - One real recipe with quantities, and the true story behind it (slide 10).
 - Names of both students, in Hebrew and English (form only; ID numbers go in the form, never here).
-- Confirm the group code `biu-noa7`.
 
 ## Decisions
 
@@ -177,5 +176,8 @@ Real decisions only, recorded as they happen.
 |---|---|---|---|
 | 2026-11-07 | Topic: baking | Team's choice | Team |
 | 2026-11-07 | Repo under the `morgannoa` GitHub account | Team's choice | Team |
-| 2026-11-07 | Not a doughnut | It is the lecture's own example, so it would read as copied | Model proposal, awaiting team review |
-| 2026-11-07 | Keep flour in the vector | 10 of 12 against 8 of 12 in the prototype | Model proposal, awaiting team review |
+| 2026-11-07 | Not a doughnut | It is the lecture's own example, so it would read as copied | Model proposal, team accepted |
+| 2026-11-07 | Keep flour in the vector | 10 of 12 against 8 of 12 in the prototype | Model proposal, team accepted |
+| 2026-11-07 | Deck in Hebrew, RTL end to end, every component aligned | Team requirement | Team |
+| 2026-11-07 | Suez One and Heebo | Rendered candidates with the deck's real text and compared them | Model, on the team's instruction to use Google Fonts |
+| 2026-11-07 | Report 9 of 12, not 10 of 12 | Published recipes replaced remembered ones | Model, under the rule in this PRD |
