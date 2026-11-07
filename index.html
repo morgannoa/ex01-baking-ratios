@@ -248,7 +248,7 @@ pre.code[hidden] { display: none; }
 .fields input { inline-size: 100%; min-height: 54px; padding-inline: 10px; border: 1px solid var(--line); border-block-end: 4px solid var(--c); border-radius: 10px; background: transparent; font-size: 22px; font-variant-numeric: tabular-nums; text-align: start; }
 .fields input::-webkit-outer-spin-button, .fields input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .fields input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
-.verdict { min-height: 96px; margin-block-start: 16px; font-size: 22px; }
+.verdict { min-height: 148px; margin-block-start: 16px; font-size: 21px; line-height: 1.35; }
 .verdict b { font-family: var(--display); font-weight: 400; font-size: 44px; color: var(--accent); display: block; line-height: 1.15; }
 
 /* Sources drawer: enters from the left, the inline end in RTL */
@@ -473,7 +473,10 @@ pre.code[hidden] { display: none; }
         <h3>עכשיו תורכם</h3>
         <p class="note">הקלידו מתכון אמיתי בגרמים, ו־<bdi dir="ltr">Python</bdi> יגיד מה יצא לכם.</p>
         <div class="fields" id="yours-fields"></div>
-        <button class="btn primary" type="submit">מה יצא לי?</button>
+        <div class="foot-row">
+          <button class="btn primary" type="submit">מה יצא לי?</button>
+          <button class="btn" type="button" id="yours-challah">דוגמה: חלה של שישי</button>
+        </div>
         <div class="verdict" id="yours-verdict" role="status"></div>
       </form>
     </div>
@@ -918,8 +921,7 @@ $('#yours-fields').innerHTML = DATA.ingredients.map(i => `
   <label class="c-${i}">${INGREDIENT_HE[i]}
     <input type="number" min="0" step="1" inputmode="numeric" data-ing="${i}" placeholder="גרם">
   </label>`).join('');
-$('#yours').addEventListener('submit', e => {
-  e.preventDefault();
+function checkRecipe(extra = '') {
   const out = $('#yours-verdict');
   if (!py.ready) {
     out.textContent = py.failed ? 'החישוב דורש Python, והוא לא נטען בדפדפן הזה.' : 'רגע, Python עדיין נטען.';
@@ -930,7 +932,15 @@ $('#yours').addEventListener('submit', e => {
   const result = py.classify(grams);
   out.innerHTML = result.error
     ? 'בלי קמח אין אחוזי אופה: הכול נמדד ביחס אליו.'
-    : `<b>יצא לכם: ${FAMILY_HE[result.closest]}</b>אחריו ${FAMILY_HE[result.runner_up]}, בפער של ${ltr(result.gap.toFixed(3))}.`;
+    : `<b>יצא לכם: ${FAMILY_HE[result.closest]}</b>אחריו ${FAMILY_HE[result.runner_up]}, בפער של ${ltr(result.gap.toFixed(3))}.${extra}`;
+}
+$('#yours').addEventListener('submit', e => { e.preventDefault(); checkRecipe(); });
+$('#yours').addEventListener('input', () => { $('#yours-verdict').textContent = ''; });
+/* A published challah, scaled to 500 g of flour */
+$('#yours-challah').addEventListener('click', () => {
+  const grams = byId.challah.grams, scale = 500 / grams.flour;
+  $$('#yours input').forEach(input => { input.value = Math.round((grams[input.dataset.ing] || 0) * scale); });
+  checkRecipe(' יש בחלה סוכר, שמן וחלמונים כמו בעוגה, ובכל זאת היחס נשאר של לחם.');
 });
 
 /* Slide 7: the oven */

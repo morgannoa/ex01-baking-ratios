@@ -82,10 +82,12 @@ await shot('slide-09');
 await next(800);                                     // 10
 for (const [ingredient, grams] of [['flour', '300'], ['fat', '200'], ['sugar', '150'], ['egg', '100']]) {
   await page.fill(`#yours input[data-ing="${ingredient}"]`, grams);
-  await pause(350);
+  await pause(300);
 }
 await page.click('#yours button[type="submit"]');
-await pause(2200);
+await pause(1500);
+await page.click('#yours-challah');
+await pause(2600);
 await shot('slide-10');
 mark('end');
 

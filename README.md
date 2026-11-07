@@ -18,7 +18,7 @@ Open `index.html` in a browser, by double-clicking it. There's nothing to instal
 
 [![The 3D bake and the Python lab](assets/demo.gif)](assets/demo.mp4)
 
-[Watch the full 55-second video](assets/demo.mp4). It's a screen capture of the real deck, not an AI-generated video. That follows the lecture's token-economics point: animating objects carries the message for far fewer resources.
+[Watch the full 57-second video](assets/demo.mp4). It's a screen capture of the real deck, not an AI-generated video. That follows the lecture's token-economics point: animating objects carries the message for far fewer resources.
 
 ## What's different about it
 
@@ -42,7 +42,7 @@ Open `index.html` in a browser, by double-clicking it. There's nothing to instal
 | 7 | The oven | Bake any family in under 5 seconds, replay, drag to rotate |
 | 8 | Python lab | Pick one of 12 recipes, move sliders, double it, read the code |
 | 9 | Where it breaks | See the three misses and what a vector can't see |
-| 10 | Your turn | Type a real recipe and get an answer |
+| 10 | Your turn | Run a Friday challah, or type a real recipe and get an answer |
 
 | Baker's percentage | The oven | Python lab |
 |---|---|---|
@@ -100,8 +100,8 @@ Fonts are from Google Fonts. Eight heading and four body candidates were rendere
 
 The work followed the lecture's loop: bullet points, PRD, build, check and fix, push.
 
-- **The team** chose the topic, set the requirements (Hebrew, RTL end to end, every component aligned, Google Fonts), chose where the repo lives and accepted the PRD.
-- **The model** (Claude Code) drafted the bullets at the team's request, then wrote the PRD, the code and the tests.
+- **The team** chose the topic, set the requirements (Hebrew, RTL end to end, every component aligned, Google Fonts), chose where the repo lives, accepted the PRD, reviewed the finished deck and made the repo public.
+- **The model** (Claude Code) drafted the bullets at the team's request, then wrote the PRD, the code and the tests. The team also asked it to choose the recipe on slide 10. It picked a published challah and didn't invent a personal story.
 
 The real prompts are in [`prompts/`](prompts/), the plan and decision log are in [`PRD.md`](PRD.md), and each push shows what changed.
 
@@ -120,9 +120,9 @@ Checking found these mistakes, and they stayed in the record:
 ## Tests
 
 ```bash
-pytest tests                                  # 12 Python tests
+pytest tests                                  # 13 Python tests
 cd tests && npm install --ignore-scripts
-npm run check                                 # 50 browser checks in Chrome
+npm run check                                 # 52 browser checks in Chrome
 npx playwright install webkit
 BROWSER=webkit npm run check                  # the same checks in Safari's engine
 ```

@@ -73,6 +73,12 @@ def test_claims_made_on_slide_9():
     assert "liquid" not in sucree and sucree["sugar"] and sucree["egg"], "the slide says no water, with sugar and egg"
 
 
+def test_claims_made_on_slide_10():
+    challah = BY_ID["challah"]["grams"]
+    assert challah["sugar"] and challah["fat"] and challah["egg"], "the slide says sugar, oil and yolks"
+    assert classify(challah)["closest"] == "bread", "the slide says the ratio stays bread"
+
+
 def test_page_runs_the_same_python_as_the_repo():
     html = (ROOT / "index.html").read_text(encoding="utf-8")
     inlined = re.search(r'id="py-source">\n(.*?)\n</script>', html, re.DOTALL).group(1)

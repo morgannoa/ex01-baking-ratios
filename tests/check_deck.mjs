@@ -122,7 +122,11 @@ for (let n = 1; n <= slideCount; n++) {
   await page.evaluate(n => { location.hash = '#' + n; }, n);
   await page.reload();
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(500);
+  // Measure the slide at rest, not during its entrance animation
+  await page.waitForFunction(() => {
+    const s = getComputedStyle(document.querySelector('.slide.active'));
+    return s.transform === 'none' && s.opacity === '1';
+  }, null, { timeout: 15000 });
   const issues = await page.evaluate(audit);
   check(`Slide ${n} RTL audit`, issues.length === 0, issues.slice(0, 8).join('\n      '));
 }
@@ -283,6 +287,16 @@ await page.fill('#yours input[data-ing="flour"]', '500');
 await page.fill('#yours input[data-ing="liquid"]', '300');
 await page.click('#yours button[type="submit"]');
 check('Typed recipe gets an answer from Python', (await page.textContent('#yours-verdict')).includes('לחם'));
+await page.click('#yours-challah');
+const challah = await page.textContent('#yours-verdict');
+check('Challah sample fills the form and reads as bread',
+  challah.includes('לחם') && challah.includes('חלמונים') && await page.inputValue('#yours input[data-ing="flour"]') === '500');
+const verdictFits = await page.evaluate(() => {
+  const form = document.querySelector('#yours').getBoundingClientRect();
+  return document.querySelector('#yours-verdict').getBoundingClientRect().bottom <= form.bottom &&
+    form.bottom <= document.querySelector('#bar').getBoundingClientRect().top;
+});
+check('Longest verdict stays inside its panel, above the bottom bar', verdictFits);
 
 check('No console errors', errors.length === 0, errors.slice(0, 5).join('\n      '));
 await browser.close();
